@@ -38,5 +38,15 @@ fn main() -> rltk::BError {
     game_state.ecs.register::<input::PlayerInputComponent>();
     game_state.ecs.register::<input::PlayerInputMappingComponent>();
 
+    game_state.ecs.create_entity()
+        .with(input::PlayerInputMappingComponent{})
+        .with(input::PlayerInputComponent{
+            move_left: false,
+            move_right: false,
+            move_up: false,
+            move_down: false,
+        })
+        .build();
+
     rltk::main_loop(context, game_state)
 }

@@ -4,20 +4,28 @@ use specs_derive::Component;
 
 #[derive(Component, Debug)]
 pub struct PlayerInputComponent {
-    pub move_left: bool
+    pub move_left: bool,
+    pub move_right: bool,
+    pub move_up: bool,
+    pub move_down: bool,
 }
 
 #[derive(Component, Debug)]
 pub struct PlayerInputMappingComponent {}
 
 impl PlayerInputMappingComponent {
-    #[allow(unused_mut)]
     pub fn process_key(&self, key: VirtualKeyCode, player_input: &mut PlayerInputComponent) {
 
         player_input.move_left = false;
+        player_input.move_right = false;
+        player_input.move_up = false;
+        player_input.move_down = false;
 
         match key {
             VirtualKeyCode::Left => player_input.move_left = true,
+            VirtualKeyCode::Right => player_input.move_right = true,
+            VirtualKeyCode::Up => player_input.move_up = true,
+            VirtualKeyCode::Down => player_input.move_down = true,
             _ => {}
         }
     }
