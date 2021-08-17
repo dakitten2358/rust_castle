@@ -16,13 +16,13 @@ impl<'a> HudSystem<'a> {
 
     fn draw_map_border(&mut self)
     {
-        for row in 0..19 {
-            draw_border_piece(self.context, 25, row, '│');
+        for row in 0..18 {
+            draw_border_piece(self.context, 24, row, '│');
         }
-        for col in 0..25 {
-            draw_border_piece(self.context, col, 19, '─');
+        for col in 0..24 {
+            draw_border_piece(self.context, col, 18, '─');
         }
-        draw_border_piece(self.context, 25, 19, '┘');
+        draw_border_piece(self.context, 24, 18, '┘');
     }
 }
 

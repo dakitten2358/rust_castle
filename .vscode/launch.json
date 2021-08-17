@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/target/debug/rust_castle.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}",
             "environment": []
         }
     ]

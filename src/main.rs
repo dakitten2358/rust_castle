@@ -5,6 +5,7 @@ mod input;
 mod render;
 mod game;
 mod hud;
+mod room;
 
 pub struct State {
     ecs: World
@@ -54,6 +55,8 @@ fn main() -> rltk::BError {
 
     register_components(&mut game_state.ecs);
 
+    room::test_read_file(&mut game_state.ecs);
+
     game_state.ecs.create_entity()
         .with(input::PlayerInputMappingComponent{})
         .with(input::PlayerInputComponent{
@@ -63,7 +66,7 @@ fn main() -> rltk::BError {
             move_down: false,
         })
         .with(game::Position{ x: 1, y: 1})
-        .with(render::Renderable::new('@', rltk::WHITE))
+        .with(render::Renderable::new('\u{2663}', rltk::WHITE))
         .with(game::Player{})
         .build();
 
