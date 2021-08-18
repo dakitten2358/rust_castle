@@ -86,4 +86,6 @@ fn register_components(world: &mut World)
     world.register::<game::Player>();
     world.register::<game::Movement>();
     world.register::<game::ColliderComponent>();
+    world.register::<room::BelongsToRoom>();
+    world.register::<room::ExitTrigger>();
 }
