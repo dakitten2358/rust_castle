@@ -55,7 +55,8 @@ fn main() -> rltk::BError {
 
     register_components(&mut game_state.ecs);
 
-    room::test_read_file(&mut game_state.ecs);
+    room::load_rooms(&mut game_state.ecs);
+    room::change_room(&mut game_state.ecs, 13, -1);
 
     game_state.ecs.create_entity()
         .with(input::PlayerInputMappingComponent{})
@@ -65,7 +66,7 @@ fn main() -> rltk::BError {
             move_up: false,
             move_down: false,
         })
-        .with(game::Position{ x: 1, y: 1})
+        .with(game::Position{ x: 12, y: 9})
         .with(render::Renderable::new('\u{2663}', rltk::WHITE))
         .with(game::Player{})
         .build();
