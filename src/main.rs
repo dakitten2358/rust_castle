@@ -84,4 +84,5 @@ fn register_components(world: &mut World)
     world.register::<game::Position>();
     world.register::<game::Player>();
     world.register::<game::Movement>();
+    world.register::<game::ColliderComponent>();
 }

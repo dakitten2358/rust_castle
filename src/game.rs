@@ -41,17 +41,26 @@ impl Movement {
 }
 
 pub struct MovementSystem {
-    
+    blocked_positions: Vec<(i32, i32)>,
 }
 
 impl<'a> System<'a> for MovementSystem {
-    type SystemData = (WriteStorage<'a, Movement>, WriteStorage<'a, Position>);
+    type SystemData = (WriteStorage<'a, Movement>, WriteStorage<'a, Position>, ReadStorage<'a, ColliderComponent>, ReadExpect<'a, Vec<crate::room::RoomData>>);
 
-    fn run(&mut self, (mut movements, mut positions): Self::SystemData) {
+    fn run(&mut self, (mut movements, mut positions, colliders, room_datas): Self::SystemData) {
+        let mut blockers = Vec::new();
+        for (position, _collider) in (&positions, &colliders).join() {
+            blockers.push((position.x, position.y));
+        }
+
         for (movement, position) in (&mut movements, &mut positions).join() {
             let (delta_x, delta_y) = movement.get_movement_input();
-            position.x += delta_x;
-            position.y += delta_y;
+            let (tentative_x, tentative_y) = (position.x + delta_x, position.y + delta_y);
+
+            if blockers.contains(&(tentative_x, tentative_y)) == false {
+                position.x = tentative_x;
+                position.y = tentative_y;
+            }            
             movement.clear_movement();
         }
     }
@@ -59,7 +68,20 @@ impl<'a> System<'a> for MovementSystem {
 
 impl MovementSystem {
     pub fn new() -> Self {
-        Self{}
+        Self {
+            blocked_positions: Vec::new(),
+        }
+    }
+
+    fn cache_colliders(&mut self, world: &World) {
+
+
+        let positions = world.read_storage::<Position>();
+        let _colliders = world.read_storage::<ColliderComponent>();
+
+        for (position, _collider) in (&positions, &_colliders).join() {
+            self.blocked_positions.push((position.x, position.y));
+        }
     }
 }
 
@@ -78,3 +100,5 @@ impl<'a> System<'a> for ApplyPlayerMovementInputSystem {
     }
 }
 
+#[derive(Component)]
+pub struct ColliderComponent {}

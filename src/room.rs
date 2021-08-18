@@ -17,7 +17,7 @@ pub enum ExitDirection {
     Down,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Collision
 {
     Enabled,
@@ -92,6 +92,9 @@ pub fn create_room_entities(world: &mut World, room_data: &RoomData) {
         let mut entity_builder = world.create_entity();
         entity_builder = entity_builder.with(crate::game::Position{ x: tile.x, y: tile.y});
         entity_builder = entity_builder.with(crate::render::Renderable::new(tile.glyph, rltk::GREY));
+        if tile.collision == Collision::Enabled {
+            entity_builder = entity_builder.with(crate::game::ColliderComponent{});
+        }
         entity_builder.build();
     }
 }
@@ -196,8 +199,9 @@ fn map_ascii_to_char(ascii_char: u8) -> char {
 
 fn map_ascii_to_collision(ascii_char: u8) -> Collision {
     match ascii_char {
-        85 => Collision::Enabled,
-        68 => Collision::Enabled,
-        _ => Collision::Disabled,
+        0 => Collision::Disabled,
+        85 => Collision::Disabled,
+        68 => Collision::Disabled,
+        _ => Collision::Enabled,
     }
 }
