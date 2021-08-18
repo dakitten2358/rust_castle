@@ -17,6 +17,12 @@ impl State {
         let mut player_input_system = input::PlayerInputSystem::new(context);
         player_input_system.run_now(&self.ecs);
 
+        let mut apply_player_movement_input = game::ApplyPlayerMovementInputSystem{};
+        apply_player_movement_input.run_now(&self.ecs);
+
+        let mut movement_system = game::MovementSystem::new();
+        movement_system.run_now(&self.ecs);
+
         // requires mutable context
         self.draw_entities(context);
         self.draw_hud(context);
@@ -60,15 +66,11 @@ fn main() -> rltk::BError {
 
     game_state.ecs.create_entity()
         .with(input::PlayerInputMappingComponent{})
-        .with(input::PlayerInputComponent{
-            move_left: false,
-            move_right: false,
-            move_up: false,
-            move_down: false,
-        })
+        .with(input::PlayerInputComponent::new())
         .with(game::Position{ x: 12, y: 9})
         .with(render::Renderable::new('\u{2663}', rltk::WHITE))
         .with(game::Player{})
+        .with(game::Movement::new())
         .build();
 
     rltk::main_loop(context, game_state)
@@ -81,4 +83,5 @@ fn register_components(world: &mut World)
     world.register::<render::Renderable>();
     world.register::<game::Position>();
     world.register::<game::Player>();
+    world.register::<game::Movement>();
 }
