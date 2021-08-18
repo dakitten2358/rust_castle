@@ -40,14 +40,12 @@ impl Movement {
     }
 }
 
-pub struct MovementSystem {
-    blocked_positions: Vec<(i32, i32)>,
-}
+pub struct MovementSystem {}
 
 impl<'a> System<'a> for MovementSystem {
-    type SystemData = (WriteStorage<'a, Movement>, WriteStorage<'a, Position>, ReadStorage<'a, ColliderComponent>, ReadExpect<'a, Vec<crate::room::RoomData>>);
+    type SystemData = (WriteStorage<'a, Movement>, WriteStorage<'a, Position>, ReadStorage<'a, ColliderComponent>);
 
-    fn run(&mut self, (mut movements, mut positions, colliders, room_datas): Self::SystemData) {
+    fn run(&mut self, (mut movements, mut positions, colliders): Self::SystemData) {
         let mut blockers = Vec::new();
         for (position, _collider) in (&positions, &colliders).join() {
             blockers.push((position.x, position.y));
@@ -68,20 +66,7 @@ impl<'a> System<'a> for MovementSystem {
 
 impl MovementSystem {
     pub fn new() -> Self {
-        Self {
-            blocked_positions: Vec::new(),
-        }
-    }
-
-    fn cache_colliders(&mut self, world: &World) {
-
-
-        let positions = world.read_storage::<Position>();
-        let _colliders = world.read_storage::<ColliderComponent>();
-
-        for (position, _collider) in (&positions, &_colliders).join() {
-            self.blocked_positions.push((position.x, position.y));
-        }
+        Self {}
     }
 }
 
