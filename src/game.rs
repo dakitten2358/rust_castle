@@ -51,11 +51,16 @@ impl<'a> System<'a> for MovementSystem {
             blockers.push((position.x, position.y));
         }
 
-        for (movement, position) in (&mut movements, &mut positions).join() {
+        let mut new_blockers = Vec::new();
+        let mut free_blockers = Vec::new();
+        for (movement, position, _collider) in (&mut movements, &mut positions, &colliders).join() {
             let (delta_x, delta_y) = movement.get_movement_input();
             let (tentative_x, tentative_y) = (position.x + delta_x, position.y + delta_y);
 
-            if blockers.contains(&(tentative_x, tentative_y)) == false {
+            if (blockers.contains(&(tentative_x, tentative_y)) == false || (blockers.contains(&(tentative_x, tentative_y)) && free_blockers.contains(&(tentative_x, tentative_y)))) && new_blockers.contains(&(tentative_x, tentative_y)) == false {
+                new_blockers.push((tentative_x, tentative_y));
+                free_blockers.push((position.x, position.y));
+
                 position.x = tentative_x;
                 position.y = tentative_y;
             }            

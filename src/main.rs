@@ -71,6 +71,7 @@ fn main() -> rltk::BError {
         .with(render::Renderable::new('\u{2663}', rltk::WHITE))
         .with(game::Player{})
         .with(game::Movement::new())
+        .with(game::ColliderComponent{})
         .build();
 
     rltk::main_loop(context, game_state)
