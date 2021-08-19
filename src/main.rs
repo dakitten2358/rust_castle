@@ -8,11 +8,16 @@ mod hud;
 mod room;
 
 pub struct State {
-    ecs: World
+    ecs: World,
+    room: i32,
 }
 
 impl State {
     fn run_systems(&mut self, context: &mut Rltk) {
+        // requires mutable context
+        self.draw_entities(context);
+        self.draw_hud(context);
+
         // immutable context
         let mut player_input_system = input::PlayerInputSystem::new(context);
         player_input_system.run_now(&self.ecs);
@@ -23,10 +28,27 @@ impl State {
         let mut movement_system = game::MovementSystem::new();
         movement_system.run_now(&self.ecs);
 
-        // requires mutable context
-        self.draw_entities(context);
-        self.draw_hud(context);
-
+        let mut exit_trigger_system = game::ExitTriggerSystem::new();
+        exit_trigger_system.run_now(&self.ecs);
+        match exit_trigger_system.exit_data {
+            Some(exit_data) => {
+                let old_room = self.room;
+                self.room = exit_data.to_room;
+                room::change_room(&mut self.ecs, self.room, old_room);
+                
+                // adjust player position if needed
+                for (_player, position) in (&self.ecs.read_storage::<game::Player>(), &mut self.ecs.write_storage::<game::Position>()).join() {
+                    match exit_data.direction {
+                        room::ExitDirection::North => { position.y = 17; },
+                        room::ExitDirection::South => { position.y = 0;}, 
+                        room::ExitDirection::East => { position.x = 0;},
+                        room::ExitDirection::West => { position.x = 23; },
+                        _ => {}
+                    }
+                }
+            },
+            _ => {}
+        }
         self.ecs.maintain();
     }
 
@@ -36,7 +58,7 @@ impl State {
     }
 
     fn draw_hud(&mut self, context: &mut Rltk) {
-        let mut hud_system = hud::HudSystem::new(&self, context);
+        let mut hud_system = hud::HudSystem::new(&self, context, self.room);
         hud_system.run_now(&self.ecs);
     }
 }
@@ -56,13 +78,14 @@ fn main() -> rltk::BError {
         .build()?;
     
     let mut game_state = State {
-        ecs: World::new()
+        ecs: World::new(),
+        room: 0
     };
 
     register_components(&mut game_state.ecs);
 
     room::load_rooms(&mut game_state.ecs);
-    room::change_room(&mut game_state.ecs, 13, -1);
+    room::change_room(&mut game_state.ecs, 0, -1);
 
     game_state.ecs.create_entity()
         .with(input::PlayerInputMappingComponent{})
