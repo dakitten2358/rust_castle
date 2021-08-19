@@ -43,10 +43,6 @@ impl Movement {
         (min(1, max(-1, self.cumulative_x_movement)), min(1, max(-1, self.cumulative_y_movement)))       
     }
 
-    pub fn wants_to_move(&self) -> bool {
-        self.cumulative_x_movement != 0 || self.cumulative_y_movement != 0
-    }
-
     pub fn moved(&mut self) {
         self.moved_this_frame = true;
     }
@@ -70,8 +66,6 @@ impl<'a> System<'a> for MovementSystem {
         let mut new_blockers = Vec::new();
         let mut free_blockers = Vec::new();
         for (movement, position, _collider) in (&mut movements, &mut positions, &colliders).join() {
-            if !movement.wants_to_move() { continue; }
-
             let (delta_x, delta_y) = movement.get_movement_input();
             movement.clear_movement();
 
