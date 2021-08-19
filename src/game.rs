@@ -11,6 +11,18 @@ pub struct Position {
 #[derive(Component)]
 pub struct Player {}
 
+pub fn create_player_entity(world: &mut World) {
+    world.create_entity()
+        .with(crate::input::PlayerInputMappingComponent{})
+        .with(crate::input::PlayerInputComponent::new())
+        .with(Position{ x: 12, y: 9})
+        .with(crate::render::Renderable::new('\u{2663}', rltk::WHITE))
+        .with(Player{})
+        .with(Movement::new())
+        .with(ColliderComponent{})
+        .build();
+}
+
 #[derive(Component)]
 pub struct Movement {
     cumulative_x_movement: i32,
