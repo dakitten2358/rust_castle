@@ -21,6 +21,7 @@ pub fn create_player_entity(world: &mut World) {
         .with(Player{})
         .with(Movement::new())
         .with(ColliderComponent{})
+        //.with(crate::hud::DebugHudComponent{})
         .build();
 }
 

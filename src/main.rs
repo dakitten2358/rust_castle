@@ -17,6 +17,7 @@ impl State {
         // requires mutable context
         self.draw_entities(context);
         self.draw_hud(context);
+        self.draw_debug(context);
 
         // immutable context
         let mut player_input_system = input::PlayerInputSystem::new(context);
@@ -61,6 +62,11 @@ impl State {
         let mut hud_system = hud::HudSystem::new(&self, context, self.room);
         hud_system.run_now(&self.world);
     }
+
+    fn draw_debug(&mut self, context: &mut Rltk) {
+        let mut debug_hud = hud::DebugHudSystem::new(&self, context, self.room);
+        debug_hud.run_now(&self.world);
+    }
 }
 
 impl GameState for State {
@@ -104,4 +110,5 @@ fn register_components(world: &mut World)
     world.register::<game::ColliderComponent>();
     world.register::<room::BelongsToRoom>();
     world.register::<room::ExitTrigger>();
+    world.register::<hud::DebugHudComponent>();
 }

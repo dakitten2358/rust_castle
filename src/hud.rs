@@ -1,4 +1,5 @@
 use specs::prelude::*;
+use specs_derive::Component;
 
 #[allow(dead_code)]
 pub struct HudSystem<'a> {
@@ -57,3 +58,36 @@ impl<'a> System<'a> for HudSystem<'_> {
         }
     }
 }
+
+#[derive(Component)]
+pub struct DebugHudComponent {}
+
+#[allow(dead_code)]
+pub struct DebugHudSystem<'a> {
+    context: &'a mut rltk::Rltk,
+    state: &'a crate::State,
+    room: i32,
+}
+
+impl<'a> DebugHudSystem<'a> {
+    pub fn new(state: &'a crate::State, with_context: &'a mut rltk::Rltk, room: i32) -> Self {
+        Self {
+            context: with_context,
+            state: state,
+            room: room,
+        }
+    }
+}
+
+impl<'a> System<'a> for DebugHudSystem<'_> {
+    type SystemData = (ReadStorage<'a, crate::game::Player>, ReadStorage<'a, DebugHudComponent>, ReadExpect<'a, Vec<crate::room::RoomData>>);
+
+    fn run(&mut self, (players, debug_huds, _room_datas): Self::SystemData) {
+        // debug
+        for (_player, _debug) in (&players, &debug_huds).join() {
+            self.context.print(37, 24, self.room.to_string());
+        }        
+    }
+}
+
+    
