@@ -95,6 +95,7 @@ fn main() -> rltk::BError {
 fn register_components(world: &mut World)
 {
     world.register::<input::PlayerInputComponent>();
+    world.register::<input::PlayerTextInputComponent>();
     world.register::<input::PlayerInputMappingComponent>();
     world.register::<render::Renderable>();
     world.register::<game::Position>();

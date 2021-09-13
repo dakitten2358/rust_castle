@@ -15,6 +15,7 @@ pub fn create_player_entity(world: &mut World) {
     world.create_entity()
         .with(crate::input::PlayerInputMappingComponent{})
         .with(crate::input::PlayerInputComponent::new())
+        .with(crate::input::PlayerTextInputComponent::new())
         .with(Position{ x: 12, y: 9})
         .with(crate::render::Renderable::new_with_z('\u{2663}', rltk::WHITE, 1))
         .with(Player{})
