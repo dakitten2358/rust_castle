@@ -26,6 +26,9 @@ impl State {
         let mut apply_player_movement_input = game::ApplyPlayerMovementInputSystem{};
         apply_player_movement_input.run_now(&self.world);
 
+        let mut player_commands = game::PlayerTextCommandSystem{};
+        player_commands.run_now(&self.world);
+
         let mut movement_system = game::MovementSystem::new();
         movement_system.run_now(&self.world);
 
@@ -111,4 +114,5 @@ fn register_components(world: &mut World)
     world.register::<room::BelongsToRoom>();
     world.register::<room::ExitTrigger>();
     world.register::<hud::DebugHudComponent>();
+    world.register::<game::ActiveDescriptionComponent>();
 }

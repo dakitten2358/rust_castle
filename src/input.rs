@@ -47,36 +47,58 @@ impl PlayerInputMappingComponent {
 
 #[derive(Component, Debug)]
 pub struct PlayerTextInputComponent {
-    pub input_text: String,
+    input_text: String,
+    submitted: bool,
 }
 
 impl PlayerTextInputComponent {
     pub fn new() -> Self {
         Self {
             input_text: String::from(""),
+            submitted: false,
         }
     }
 
     pub fn add_character(&mut self, c: char) {
-        self.input_text.push(c);
+        if !self.is_submitted() {
+            self.input_text.push(c);
+        }
     }
 
     pub fn add_space(&mut self) {
-        // add check to prevent double spaces
-        self.add_character(' ');
+        if !self.is_submitted() {
+            self.add_character(' ');
+        }
     }
 
     pub fn backspace(&mut self) {
-        self.input_text.pop();
+        if !self.is_submitted() {
+            self.input_text.pop();
+        }
     }
 
     pub fn clear_text(&mut self) {
-        self.input_text.clear();
+        if !self.is_submitted() {
+            self.input_text.clear();
+        }
     }
 
-    pub fn consume_text(&mut self) -> String {
+    pub fn get_preview(&self) -> String {
+        self.input_text.clone()
+    }
+
+    pub fn is_submitted(&self) -> bool {
+        self.submitted
+    }
+
+    pub fn submit(&mut self) {
+        self.submitted = true;
+    }
+
+    pub fn consume(&mut self) -> String {
         let text = self.input_text.clone();
-        self.clear_text();
+        self.submitted = false;
+        self.input_text.clear();        
         return text;
     }
 }
@@ -123,6 +145,7 @@ impl<'a> PlayerInputSystem<'a> {
             VirtualKeyCode::Space => player_text_input.add_space(),
             VirtualKeyCode::Back => player_text_input.backspace(),
             VirtualKeyCode::Escape => player_text_input.clear_text(),
+            VirtualKeyCode::Return => player_text_input.submit(),
             _ => {}
         }
     }

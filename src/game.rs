@@ -1,6 +1,7 @@
 use specs::prelude::*;
 use specs_derive::Component;
 use std::cmp::*;
+use std::str::FromStr;
 
 #[derive(Component)]
 pub struct Position {
@@ -21,6 +22,7 @@ pub fn create_player_entity(world: &mut World) {
         .with(Player{})
         .with(Movement::new())
         .with(ColliderComponent{})
+        .with(ActiveDescriptionComponent::new())
         //.with(crate::hud::DebugHudComponent{})
         .build();
 }
@@ -149,5 +151,79 @@ impl ExitTriggerSystem {
         Self {
             exit_data: None,
         }
+    }
+}
+
+#[derive(Component)]
+pub struct ActiveDescriptionComponent {
+    pub description: String,
+}
+
+impl ActiveDescriptionComponent {
+    pub fn new() -> Self {
+        Self {
+            description: String::new(),
+        }
+    }
+
+    pub fn set(&mut self, new_description: &str) {
+        self.description = String::from_str(new_description).unwrap();
+    }
+}
+
+pub struct PlayerTextCommandSystem {}
+
+impl PlayerTextCommandSystem {
+    fn process_text_input(&self, text_command: String) -> Option<&str> {
+        let mut tokens = text_command.split_whitespace();
+        match tokens.next()
+        {
+            Some(token) => {
+                match token {
+                    "look" => self.process_look(tokens.next()),
+                    "use" => self.process_use(tokens.next()),
+                    _ => None
+                }
+            },
+            None => None
+        }
+    }
+
+    fn process_look(&self, look_at_target_name: Option<&str>) -> Option<&str> {
+        match look_at_target_name {
+            Some(target_name) => self.process_look_target(target_name),
+            None => self.process_look_room(),
+        }
+    }
+
+    fn process_look_target(&self, _target_name: &str) -> Option<&str> {
+        return Some("look at target");
+
+    }
+
+    fn process_look_room(&self) -> Option<&str> {
+        return Some("look at room with long description here");
+    }
+
+    fn process_use(&self, _use_target_name: Option<&str>) -> Option<&str> {
+        return Some("use item");
+    }
+}
+
+impl<'a> System<'a> for PlayerTextCommandSystem {
+    type SystemData = (ReadStorage<'a, Player>, WriteStorage<'a, crate::input::PlayerTextInputComponent>, WriteStorage<'a, ActiveDescriptionComponent>);
+
+    fn run(&mut self, (players, mut text_inputs, mut active_descriptions) : Self::SystemData) {
+        for(_player, text_input, description) in (&players, &mut text_inputs, &mut active_descriptions).join() {
+            if text_input.is_submitted()
+            {
+                let text_command = text_input.consume();
+                match self.process_text_input(text_command)
+                {
+                    Some(result) => description.set(result),
+                    None => description.set("i don't understand"),
+                }
+            }
+        }       
     }
 }
