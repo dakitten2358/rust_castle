@@ -118,7 +118,7 @@ impl MovementSystem {
 }
 
 pub struct ApplyPlayerMovementInputSystem {
-    pub player_moved: bool
+    pub player_moved: bool,
 }
 
 impl ApplyPlayerMovementInputSystem {
@@ -134,9 +134,9 @@ impl<'a> System<'a> for ApplyPlayerMovementInputSystem {
         self.player_moved = false;
         for (player_input, movement) in (&player_inputs, &mut movements).join() {
             if player_input.move_left { movement.add_movement_input(-1, 0); self.player_moved = true; }
-            if player_input.move_right { movement.add_movement_input(1, 0); self.player_moved = true; }
-            if player_input.move_up { movement.add_movement_input(0, -1); self.player_moved = true; }
-            if player_input.move_down { movement.add_movement_input(0, 1); self.player_moved = true; }
+            if player_input.move_right { movement.add_movement_input(1, 0);  self.player_moved = true; }
+            if player_input.move_up { movement.add_movement_input(0, -1);  self.player_moved = true; }
+            if player_input.move_down { movement.add_movement_input(0, 1);  self.player_moved = true; }
         }
     }
 }
