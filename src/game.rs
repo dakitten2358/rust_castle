@@ -215,14 +215,15 @@ impl<'a> System<'a> for PlayerTextCommandSystem {
 
     fn run(&mut self, (players, mut text_inputs, mut active_descriptions) : Self::SystemData) {
         for(_player, text_input, description) in (&players, &mut text_inputs, &mut active_descriptions).join() {
-            if text_input.is_submitted()
-            {
-                let text_command = text_input.consume();
-                match self.process_text_input(text_command)
-                {
-                    Some(result) => description.set(result),
-                    None => description.set("i don't understand"),
-                }
+            match text_input.consume() {
+                Some(text_command) => {
+                    match self.process_text_input(text_command)
+                    {
+                        Some(result) => description.set(result),
+                        None => description.set("i don't understand"),
+                    }
+                },
+                None => {}
             }
         }       
     }

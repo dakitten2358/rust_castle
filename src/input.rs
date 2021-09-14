@@ -60,25 +60,25 @@ impl PlayerTextInputComponent {
     }
 
     pub fn add_character(&mut self, c: char) {
-        if !self.is_submitted() {
+        if !self.submitted {
             self.input_text.push(c);
         }
     }
 
     pub fn add_space(&mut self) {
-        if !self.is_submitted() {
+        if !self.submitted {
             self.add_character(' ');
         }
     }
 
     pub fn backspace(&mut self) {
-        if !self.is_submitted() {
+        if !self.submitted {
             self.input_text.pop();
         }
     }
 
     pub fn clear_text(&mut self) {
-        if !self.is_submitted() {
+        if !self.submitted {
             self.input_text.clear();
         }
     }
@@ -87,19 +87,22 @@ impl PlayerTextInputComponent {
         self.input_text.clone()
     }
 
-    pub fn is_submitted(&self) -> bool {
-        self.submitted
-    }
-
     pub fn submit(&mut self) {
         self.submitted = true;
     }
 
-    pub fn consume(&mut self) -> String {
-        let text = self.input_text.clone();
-        self.submitted = false;
-        self.input_text.clear();        
-        return text;
+    pub fn consume(&mut self) -> Option<String> {
+        if self.submitted {
+            let text = self.input_text.clone();
+        
+            self.submitted = false;
+            self.input_text.clear();
+            Some(text)
+        }
+        else
+        {
+            None
+        }
     }
 }
 
