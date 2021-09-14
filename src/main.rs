@@ -35,23 +35,8 @@ impl State {
         let mut exit_trigger_system = game::ExitTriggerSystem::new();
         exit_trigger_system.run_now(&self.world);
         match exit_trigger_system.exit_data {
-            Some(exit_data) => {
-                let old_room = self.room;
-                self.room = exit_data.to_room;
-                room::change_room(&mut self.world, self.room, old_room);
-                
-                // adjust player position if needed
-                for (_player, position) in (&self.world.read_storage::<game::Player>(), &mut self.world.write_storage::<game::Position>()).join() {
-                    match exit_data.direction {
-                        room::ExitDirection::North => { position.y = 17; },
-                        room::ExitDirection::South => { position.y = 0;}, 
-                        room::ExitDirection::East => { position.x = 0;},
-                        room::ExitDirection::West => { position.x = 23; },
-                        _ => {}
-                    }
-                }
-            },
-            _ => {}
+            Some(exit_data) => self.change_room(exit_data.to_room, exit_data.direction),
+            None => {}
         }
         self.world.maintain();
     }
@@ -69,6 +54,23 @@ impl State {
     fn draw_debug(&mut self, context: &mut Rltk) {
         let mut debug_hud = hud::DebugHudSystem::new(&self, context, self.room);
         debug_hud.run_now(&self.world);
+    }
+
+    fn change_room(&mut self, to_room: i32, direction: room::ExitDirection) {
+        let old_room = self.room;
+        self.room = to_room;
+        room::change_room(&mut self.world, self.room, old_room);
+
+        // adjust player position if needed
+        for (_player, position) in (&self.world.read_storage::<game::Player>(), &mut self.world.write_storage::<game::Position>()).join() {
+            match direction {
+                room::ExitDirection::North => { position.y = 17; },
+                room::ExitDirection::South => { position.y = 0;},
+                room::ExitDirection::East => { position.x = 0;},
+                room::ExitDirection::West => { position.x = 23; },
+                _ => {}
+            }
+        }
     }
 }
 
