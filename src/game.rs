@@ -3,6 +3,12 @@ use specs_derive::Component;
 use std::cmp::*;
 use std::str::FromStr;
 
+use crate::input::{PlayerInputMappingComponent, PlayerInputComponent, PlayerTextInputComponent};
+use crate::render::{Renderable};
+
+#[allow(unused_imports)]
+use crate::hud::{DebugHudComponent};
+
 #[derive(Component)]
 pub struct Position {
     pub x: i32,
@@ -14,16 +20,16 @@ pub struct Player {}
 
 pub fn create_player_entity(world: &mut World) {
     world.create_entity()
-        .with(crate::input::PlayerInputMappingComponent{})
-        .with(crate::input::PlayerInputComponent::new())
-        .with(crate::input::PlayerTextInputComponent::new())
+        .with(PlayerInputMappingComponent{})
+        .with(PlayerInputComponent::new())
+        .with(PlayerTextInputComponent::new())
         .with(Position{ x: 12, y: 9})
-        .with(crate::render::Renderable::new_with_z('\u{2663}', rltk::WHITE, 1))
+        .with(Renderable::new_with_z('\u{2663}', rltk::WHITE, 1))
         .with(Player{})
         .with(Movement::new())
         .with(ColliderComponent{})
         .with(ActiveDescriptionComponent::new())
-        //.with(crate::hud::DebugHudComponent{})
+        //.with(DebugHudComponent{})
         .build();
 }
 
@@ -109,7 +115,7 @@ impl MovementSystem {
 pub struct ApplyPlayerMovementInputSystem {}
 
 impl<'a> System<'a> for ApplyPlayerMovementInputSystem {
-    type SystemData = (ReadStorage<'a, crate::input::PlayerInputComponent>, WriteStorage<'a, Movement>);
+    type SystemData = (ReadStorage<'a, PlayerInputComponent>, WriteStorage<'a, Movement>);
 
     fn run(&mut self, (player_inputs, mut movements): Self::SystemData) {
         for (player_input, movement) in (&player_inputs, &mut movements).join() {
@@ -211,7 +217,7 @@ impl PlayerTextCommandSystem {
 }
 
 impl<'a> System<'a> for PlayerTextCommandSystem {
-    type SystemData = (ReadStorage<'a, Player>, WriteStorage<'a, crate::input::PlayerTextInputComponent>, WriteStorage<'a, ActiveDescriptionComponent>);
+    type SystemData = (ReadStorage<'a, Player>, WriteStorage<'a, PlayerTextInputComponent>, WriteStorage<'a, ActiveDescriptionComponent>);
 
     fn run(&mut self, (players, mut text_inputs, mut active_descriptions) : Self::SystemData) {
         for(_player, text_input, description) in (&players, &mut text_inputs, &mut active_descriptions).join() {

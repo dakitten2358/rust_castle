@@ -1,6 +1,10 @@
 use specs::prelude::*;
 use specs_derive::Component;
 
+use crate::room::{RoomData};
+use crate::game::{Player, ActiveDescriptionComponent};
+use crate::input::{PlayerTextInputComponent};
+
 #[allow(dead_code)]
 pub struct HudSystem<'a> {
     context: &'a mut rltk::Rltk,
@@ -28,7 +32,7 @@ impl<'a> HudSystem<'a> {
         draw_border_piece(self.context, 24, 18, '┘');
     }
 
-    fn print_description(&mut self, room_data: &crate::room::RoomData) {
+    fn print_description(&mut self, room_data: &RoomData) {
         for row in 0..5 {
             self.context.print(0, 19 + row, &room_data.description[row]);
         }
@@ -70,7 +74,7 @@ fn draw_border_piece(context: &mut rltk::Rltk, x: i32, y: i32, glyph: char) {
 }
 
 impl<'a> System<'a> for HudSystem<'_> {
-    type SystemData = (ReadStorage<'a, crate::game::Player>, ReadStorage<'a, crate::input::PlayerTextInputComponent>, ReadStorage<'a, crate::game::ActiveDescriptionComponent>, ReadExpect<'a, Vec<crate::room::RoomData>>);
+    type SystemData = (ReadStorage<'a, Player>, ReadStorage<'a, PlayerTextInputComponent>, ReadStorage<'a, ActiveDescriptionComponent>, ReadExpect<'a, Vec<RoomData>>);
 
     fn run(&mut self, (_players, player_text_inputs, active_descriptions, room_datas): Self::SystemData) {
         self.draw_map_border();
@@ -109,7 +113,7 @@ impl<'a> DebugHudSystem<'a> {
 }
 
 impl<'a> System<'a> for DebugHudSystem<'_> {
-    type SystemData = (ReadStorage<'a, crate::game::Player>, ReadStorage<'a, DebugHudComponent>, ReadExpect<'a, Vec<crate::room::RoomData>>);
+    type SystemData = (ReadStorage<'a, Player>, ReadStorage<'a, DebugHudComponent>, ReadExpect<'a, Vec<RoomData>>);
 
     fn run(&mut self, (players, debug_huds, _room_datas): Self::SystemData) {
         // debug

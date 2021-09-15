@@ -2,6 +2,8 @@ use rltk::{RGB};
 use specs::prelude::*;
 use specs_derive::Component;
 
+use crate::game::{Position};
+
 #[derive(Component)]
 pub struct Renderable {
     pub glyph: rltk::FontCharType,
@@ -38,7 +40,7 @@ impl<'a> RenderSystem<'a> {
 }
 
 impl<'a> System<'a> for RenderSystem<'_> {
-    type SystemData = (ReadStorage<'a, crate::game::Position>, ReadStorage<'a, Renderable>);
+    type SystemData = (ReadStorage<'a, Position>, ReadStorage<'a, Renderable>);
 
     fn run(&mut self, (positions, renderables): Self::SystemData) {
         for zorder in 0..2 {

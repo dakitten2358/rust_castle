@@ -5,6 +5,9 @@ use std::str;
 use regex::Regex;
 use specs_derive::Component;
 
+use crate::game::{Position, ColliderComponent};
+use crate::render::{Renderable};
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ExitDirection {
     Invalid,
@@ -126,11 +129,11 @@ pub fn create_room_entities(world: &mut World, room: i32, room_data: &RoomData) 
     // create entities for hte tiles
     for tile in &room_data.tiles {
         let mut entity_builder = world.create_entity();
-        entity_builder = entity_builder.with(crate::game::Position{ x: tile.x, y: tile.y});
-        entity_builder = entity_builder.with(crate::render::Renderable::new(tile.glyph, rltk::GREY));
+        entity_builder = entity_builder.with(Position{ x: tile.x, y: tile.y});
+        entity_builder = entity_builder.with(Renderable::new(tile.glyph, rltk::GREY));
 
         if tile.collision == Collision::Enabled {
-            entity_builder = entity_builder.with(crate::game::ColliderComponent{});
+            entity_builder = entity_builder.with(ColliderComponent{});
         }
 
         match exit_data_for_tile(room_data, tile) {
@@ -177,10 +180,10 @@ pub fn create_room_entities(world: &mut World, room: i32, room_data: &RoomData) 
 
 fn create_edge_exit_entity(world: &mut World, room: i32, x: i32, y: i32, direction: ExitDirection, to_room: i32) {
     world.create_entity()
-        .with(crate::game::Position{x: x, y: y})
+        .with(Position{x: x, y: y})
         .with(ExitTrigger::new(direction, to_room))
         .with(BelongsToRoom { room: room })
-        //.with(crate::render::Renderable::new('x', rltk::YELLOW))
+        //.with(Renderable::new('x', rltk::YELLOW))
         .build();
 }
 
