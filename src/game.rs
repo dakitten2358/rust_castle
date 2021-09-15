@@ -9,10 +9,15 @@ use crate::render::{Renderable};
 #[allow(unused_imports)]
 use crate::hud::{DebugHudComponent};
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct Position {
     pub x: i32,
     pub y: i32,
+}
+
+impl Position {
+    pub fn distance_sq(a: &Position, b: &Position) -> i32 { (b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y) }
+    pub fn delta(a: &Position, b: &Position) -> (i32, i32) { (b.x - a.x, b.y - a.y) }
 }
 
 #[derive(Component)]
@@ -112,17 +117,26 @@ impl MovementSystem {
     }
 }
 
-pub struct ApplyPlayerMovementInputSystem {}
+pub struct ApplyPlayerMovementInputSystem {
+    pub player_moved: bool
+}
+
+impl ApplyPlayerMovementInputSystem {
+    pub fn new() -> Self {
+        Self { player_moved: false }
+    }
+}
 
 impl<'a> System<'a> for ApplyPlayerMovementInputSystem {
     type SystemData = (ReadStorage<'a, PlayerInputComponent>, WriteStorage<'a, Movement>);
 
     fn run(&mut self, (player_inputs, mut movements): Self::SystemData) {
+        self.player_moved = false;
         for (player_input, movement) in (&player_inputs, &mut movements).join() {
-            if player_input.move_left { movement.add_movement_input(-1, 0); }
-            if player_input.move_right { movement.add_movement_input(1, 0); }
-            if player_input.move_up { movement.add_movement_input(0, -1); }
-            if player_input.move_down { movement.add_movement_input(0, 1); }
+            if player_input.move_left { movement.add_movement_input(-1, 0); self.player_moved = true; }
+            if player_input.move_right { movement.add_movement_input(1, 0); self.player_moved = true; }
+            if player_input.move_up { movement.add_movement_input(0, -1); self.player_moved = true; }
+            if player_input.move_down { movement.add_movement_input(0, 1); self.player_moved = true; }
         }
     }
 }

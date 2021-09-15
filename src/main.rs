@@ -6,6 +6,7 @@ mod render;
 mod game;
 mod hud;
 mod room;
+mod ai;
 
 pub struct State {
     world: World,
@@ -23,8 +24,12 @@ impl State {
         let mut player_input_system = input::PlayerInputSystem::new(context);
         player_input_system.run_now(&self.world);
 
-        let mut apply_player_movement_input = game::ApplyPlayerMovementInputSystem{};
+        let mut apply_player_movement_input = game::ApplyPlayerMovementInputSystem::new();
         apply_player_movement_input.run_now(&self.world);
+        if apply_player_movement_input.player_moved {
+            let mut ai = ai::AiMoveToPlayerSystem{};
+            ai.run_now(&self.world);
+        }
 
         let mut player_commands = game::PlayerTextCommandSystem{};
         player_commands.run_now(&self.world);
@@ -96,6 +101,7 @@ fn main() -> rltk::BError {
     register_components(&mut game_state.world);
 
     game::create_player_entity(&mut game_state.world);
+    ai::create_test_ai(&mut game_state.world);
 
     room::load_rooms(&mut game_state.world);
     room::change_room(&mut game_state.world, 0, -1);
@@ -117,4 +123,5 @@ fn register_components(world: &mut World)
     world.register::<room::ExitTrigger>();
     world.register::<hud::DebugHudComponent>();
     world.register::<game::ActiveDescriptionComponent>();
+    world.register::<ai::AiMoveToPlayer>();
 }
