@@ -9,7 +9,7 @@ use crate::render::{Renderable};
 #[allow(unused_imports)]
 use crate::hud::{DebugHudComponent};
 
-#[derive(Component, Clone)]
+#[derive(Component, Clone, PartialEq)]
 pub struct Position {
     pub x: i32,
     pub y: i32,
@@ -155,7 +155,7 @@ impl<'a> System<'a> for ExitTriggerSystem {
         for (_player, movement, position) in (&players, &movements, &positions).join() {
             if movement.did_move() {
                 for (exit_trigger, exit_position) in (&exit_triggers, &positions).join() {
-                    if position.x == exit_position.x && position.y == exit_position.y {
+                    if position == exit_position {
                         self.exit_data = Some(crate::room::ExitData{ direction: exit_trigger.from_direction, to_room: exit_trigger.to_room });
                         return;
                     }
