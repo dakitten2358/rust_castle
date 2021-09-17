@@ -1,7 +1,7 @@
 use specs::prelude::*;
 use specs_derive::Component;
 
-use crate::game::{Movement, Position, Name};
+use crate::game::{Movement, Position};
 
 #[derive(Component)]
 pub struct CombatStats {
@@ -101,12 +101,10 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, Position>,
         ReadStorage<'a, AppliesDamage>,
         WriteStorage<'a, WantsToAttack>,
-        ReadStorage<'a, Name>
     );
 
-    fn run(&mut self, (entities, movements, positions, damage_stats, mut wants_to_attack, names): Self::SystemData) {   
-        for (entity, movement, position, _damage_stats, name) in (&entities, &movements, &positions, &damage_stats, &names).join() {
-            println!("checking {} for melee -> was_move_blocked: {}", name.text, movement.was_move_blocked());
+    fn run(&mut self, (entities, movements, positions, damage_stats, mut wants_to_attack): Self::SystemData) {   
+        for (entity, movement, position, _damage_stats) in (&entities, &movements, &positions, &damage_stats).join() {
             if movement.was_move_blocked() {
                 let (delta_x, delta_y) = movement.get_attempted_move();
                 let (target_x, target_y) = (position.x + delta_x, position.y + delta_y);
