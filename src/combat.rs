@@ -17,6 +17,7 @@ pub struct AppliesDamage {
 #[derive(Component)]
 pub struct ApplyDamageComponent {
     pub amounts: Vec::<i32>,
+    pub instigator: Entity,
 }
 
 #[derive(Component)]
@@ -27,21 +28,39 @@ pub struct WantsToAttack {
 #[derive(Component)]
 pub struct DeadTag {}
 
-pub struct DamageSystem {
+#[derive(Component)]
+pub struct CombatLog {
+    pub logs: Vec<String>,
 }
+
+impl CombatLog {
+    pub fn new() -> Self {
+        Self {
+            logs: vec!["".to_string(), "".to_string()],
+        }
+    }
+
+    pub fn push(&mut self, text: String) {
+        self.logs[0] = self.logs[1].clone();
+        self.logs[1] = text.clone();
+    }
+}
+
+pub struct DamageSystem {}
 
 
 fn kill(target: Entity, dead_tags: &mut WriteStorage<DeadTag>) {
     dead_tags.insert(target, DeadTag{}).expect("failed to add kill tag!");
 }
 
-fn add_damage(target: Entity, amount: i32, damages: &mut WriteStorage<ApplyDamageComponent>) {
+fn add_damage(instigator: Entity, target: Entity, amount: i32, damages: &mut WriteStorage<ApplyDamageComponent>) {
     if let Some(damage) = damages.get_mut(target) {
         damage.amounts.push(amount);
+        damage.instigator = instigator;
     }
     else
     {
-        let damage = ApplyDamageComponent{ amounts : vec![amount] };
+        let damage = ApplyDamageComponent{ amounts : vec![amount], instigator: instigator };
         damages.insert(target, damage).expect("failed to add apply damage");
     }
 }
@@ -54,18 +73,22 @@ impl<'a> System<'a> for DamageSystem {
         WriteStorage<'a, DeadTag>,
         WriteStorage<'a, WantsToAttack>,
         ReadStorage<'a, AppliesDamage>,
+        WriteStorage<'a, CombatLog>,
     );
 
-    fn run(&mut self, (entities, mut combat_stats, mut apply_damages, mut dead_tags, mut wants_to_attack, applies_damages): Self::SystemData) {
+    fn run(&mut self, (entities, mut combat_stats, mut apply_damages, mut dead_tags, mut wants_to_attack, applies_damages, mut combat_logs): Self::SystemData) {
         // check for people that want to apply damage to an entity
-        for (_entity, applies_damage, wants_to_attack) in (&entities, &applies_damages, &mut wants_to_attack).join() {
-            add_damage(wants_to_attack.target, applies_damage.damage, &mut apply_damages);
+        for (entity, applies_damage, wants_to_attack) in (&entities, &applies_damages, &mut wants_to_attack).join() {
+            add_damage(entity, wants_to_attack.target, applies_damage.damage, &mut apply_damages);
         }
         wants_to_attack.clear();
         
         // apply damages
-        for (entity, combat_stat, apply_damages) in (&entities, &mut combat_stats, &apply_damages).join() {
+        for (entity, combat_stat, apply_damages, ) in (&entities, &mut combat_stats, &apply_damages).join() {
             combat_stat.health -= apply_damages.amounts.iter().sum::<i32>();
+            if let Some(combat_log) = combat_logs.get_mut(entity) {
+                combat_log.push(format!("you were hit"));
+            }
             if combat_stat.health <= 0 {
                 kill(entity, &mut dead_tags);
                 println!("killed!");

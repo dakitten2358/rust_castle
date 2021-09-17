@@ -5,7 +5,7 @@ use std::str::FromStr;
 
 use crate::input::{PlayerInputMappingComponent, PlayerInputComponent, PlayerTextInputComponent};
 use crate::render::{Renderable};
-use crate::combat::{CombatStats};
+use crate::combat::{CombatStats, CombatLog};
 
 #[allow(unused_imports)]
 use crate::hud::{DebugHudComponent};
@@ -43,6 +43,7 @@ pub fn create_player_entity(world: &mut World) {
         .with(ActiveDescriptionComponent::new())
         .with(CombatStats { max_health: 10, health: 10 })
         .with(Name { text: "player".to_string() })
+        .with(CombatLog::new())
         //.with(DebugHudComponent{})
         .build();
 }

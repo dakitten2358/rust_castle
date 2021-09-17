@@ -139,4 +139,5 @@ fn register_components(world: &mut World)
     world.register::<combat::WantsToAttack>();
     world.register::<combat::DeadTag>();
     world.register::<game::Name>();
+    world.register::<combat::CombatLog>();
 }
