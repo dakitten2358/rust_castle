@@ -7,6 +7,7 @@ mod game;
 mod hud;
 mod room;
 mod ai;
+mod combat;
 
 pub struct State {
     world: World,
@@ -36,6 +37,14 @@ impl State {
 
         let mut movement_system = game::MovementSystem::new();
         movement_system.run_now(&self.world);
+
+        if apply_player_movement_input.player_moved {
+            let mut melee_system = combat::MeleeCombatSystem{};
+            melee_system.run_now(&self.world);
+
+            let mut damage_system = combat::DamageSystem{};
+            damage_system.run_now(&self.world);
+        }
 
         let mut exit_trigger_system = game::ExitTriggerSystem::new();
         exit_trigger_system.run_now(&self.world);
@@ -124,4 +133,10 @@ fn register_components(world: &mut World)
     world.register::<hud::DebugHudComponent>();
     world.register::<game::ActiveDescriptionComponent>();
     world.register::<ai::AiMoveToPlayer>();
+    world.register::<combat::CombatStats>();
+    world.register::<combat::ApplyDamageComponent>();
+    world.register::<combat::AppliesDamage>();
+    world.register::<combat::WantsToAttack>();
+    world.register::<combat::DeadTag>();
+    world.register::<game::Name>();
 }
