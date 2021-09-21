@@ -17,7 +17,7 @@ pub fn create_test_ai(world: &mut World) {
         .with(AiMoveToPlayer{})
         .with(CombatStats { max_health: 10, health: 10 })
         .with(AppliesDamage { damage: 10 })
-        .with(Name { text: "ai".to_string() })
+        .with(DebugName { text: "ai".to_string() })
         .build();
 }
 

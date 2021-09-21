@@ -25,8 +25,25 @@ impl Position {
 }
 
 #[derive(Component)]
-pub struct Name {
+pub struct DebugName {
     pub text: String,
+}
+
+#[derive(Component)]
+pub struct Description {
+    pub input_name: String,
+    pub name: String,
+    pub description: String,
+}
+
+impl Description {
+    pub fn new(name: &str, description: &str) -> Self {
+        Self {
+            input_name: name.to_ascii_lowercase(),
+            name: name.to_string(),
+            description: description.to_string(),
+        }
+    }
 }
 
 #[derive(Component)]
@@ -46,7 +63,7 @@ pub fn create_player_entity(world: &mut World) {
         .with(InventoryComponent::new())
         .with(DebugHudComponent{})
         .with(CombatStats { max_health: 10, health: 10 })
-        .with(Name { text: "player".to_string() })
+        .with(DebugName { text: "player".to_string() })
         .with(CombatLog::new())
         //.with(DebugHudComponent{})
         .build();
@@ -228,13 +245,13 @@ impl ActiveDescriptionComponent {
 pub struct PlayerTextCommandSystem {}
 
 impl PlayerTextCommandSystem {
-    fn process_text_input(&self, text_command: String) -> Option<&str> {
+    fn process_text_input<'a>(&self, text_command: String, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
         let mut tokens = text_command.split_whitespace();
         match tokens.next()
         {
             Some(token) => {
                 match token {
-                    "look" => self.process_look(tokens.next()),
+                    "look" => self.process_look(tokens.next(), descriptions),
                     "use" => self.process_use(tokens.next()),
                     _ => None
                 }
@@ -243,37 +260,46 @@ impl PlayerTextCommandSystem {
         }
     }
 
-    fn process_look(&self, look_at_target_name: Option<&str>) -> Option<&str> {
+    fn process_look<'a>(&self, look_at_target_name: Option<&str>, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
         match look_at_target_name {
-            Some(target_name) => self.process_look_target(target_name),
+            Some(target_name) => self.process_look_target(target_name, descriptions),
             None => self.process_look_room(),
         }
     }
 
-    fn process_look_target(&self, _target_name: &str) -> Option<&str> {
-        return Some("look at target");
-
+    fn process_look_target<'a>(&self, _target_name: &str, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
+        for description in (descriptions).join() {
+            if description.input_name == _target_name {
+                return Some(description.description.clone());
+            }
+        }
+        return Some("look at target".to_string());
     }
 
-    fn process_look_room(&self) -> Option<&str> {
-        return Some("look at room with long description here");
+    fn process_look_room(&self) -> Option<String> {
+        return Some("look at room with long description here".to_string());
     }
 
-    fn process_use(&self, _use_target_name: Option<&str>) -> Option<&str> {
-        return Some("use item");
+    fn process_use(&self, _use_target_name: Option<&str>) -> Option<String> {
+        return Some("use item".to_string());
     }
 }
 
 impl<'a> System<'a> for PlayerTextCommandSystem {
-    type SystemData = (ReadStorage<'a, Player>, WriteStorage<'a, PlayerTextInputComponent>, WriteStorage<'a, ActiveDescriptionComponent>);
+    type SystemData = (
+        ReadStorage<'a, Player>,
+        WriteStorage<'a, PlayerTextInputComponent>,
+        WriteStorage<'a, ActiveDescriptionComponent>,
+        ReadStorage<'a, Description>,
+    );
 
-    fn run(&mut self, (players, mut text_inputs, mut active_descriptions) : Self::SystemData) {
+    fn run(&mut self, (players, mut text_inputs, mut active_descriptions, descriptions) : Self::SystemData) {
         for(_player, text_input, description) in (&players, &mut text_inputs, &mut active_descriptions).join() {
             match text_input.consume() {
                 Some(text_command) => {
-                    match self.process_text_input(text_command)
+                    match self.process_text_input(text_command, &descriptions)
                     {
-                        Some(result) => description.set(result),
+                        Some(result) => description.set(result.as_str()),
                         None => description.set("i don't understand"),
                     }
                 },

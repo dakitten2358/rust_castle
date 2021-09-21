@@ -1,10 +1,9 @@
 use bitflags::bitflags;
 use std::fmt;
 use specs::prelude::*;
-use specs_derive::{Component};
 
 use crate::inventory::PickupTrigger;
-use crate::game::Position;
+use crate::game::{Position, Description};
 
 bitflags! {
     pub struct ItemFlags: u32 {
@@ -95,7 +94,7 @@ fn item_to_glyph(item_type: ItemFlags) -> char {
 
 pub fn item_to_description(item_type: ItemFlags) -> (&'static str, &'static str) {
     match item_type {
-        ItemFlags::LAMP => ("", ""),
+        ItemFlags::LAMP => ("Lamp", "It's bright!"),
         _ => ("", ""),
     }
 }
@@ -110,6 +109,7 @@ pub fn create_item_at(world: &mut World, room: i32, item_type: ItemFlags, x: i32
                 .with(crate::render::Renderable::new_with_z(item_to_glyph(item_type), rltk::WHITE, 1))
                 .with(PickupTrigger{item_to_pickup: item_type})
                 .with(crate::room::BelongsToRoom { room: room })
+                .with(Description::new(name, description))
                 .build();
         }
     }

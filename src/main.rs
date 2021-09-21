@@ -120,7 +120,6 @@ impl GameState for State {
 }
 
 fn main() -> rltk::BError {
-    use rltk::RltkBuilder;
     let context = terminal_builder(2)
         .build()?;
     
@@ -161,8 +160,9 @@ fn register_components(world: &mut World)
     world.register::<combat::AppliesDamage>();
     world.register::<combat::WantsToAttack>();
     world.register::<combat::DeadTag>();
-    world.register::<game::Name>();
+    world.register::<game::DebugName>();
     world.register::<combat::CombatLog>();
+    world.register::<game::Description>();
 }
 
 fn terminal_builder(scale: i32) -> rltk::RltkBuilder {

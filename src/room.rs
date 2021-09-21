@@ -5,7 +5,7 @@ use std::str;
 use regex::Regex;
 use specs_derive::Component;
 
-use crate::game::{Position, ColliderComponent};
+use crate::game::{Position, ColliderComponent, Description};
 use crate::render::{Renderable};
 use crate::items::{create_item_at, ItemFlags};
 
@@ -183,6 +183,7 @@ pub fn create_room_entities(world: &mut World, room: i32, room_data: &RoomData) 
 
 fn create_hardcoded_room_entities(world: &mut World, room: i32) {
     match room {
+        0  => { create_description(world, room, "gate", "it looks strong"); },
         16 => { create_item_at(world, room, ItemFlags::LAMP, 18, 13); },
         82 => { create_item_at(world, room, ItemFlags::SCEPTER, 11, 9); },
         23 => { create_item_at(world, room, ItemFlags::MAGICWAND, 3, 8); },
@@ -201,6 +202,13 @@ fn create_hardcoded_room_entities(world: &mut World, room: i32) {
         13 => { create_item_at(world, room, ItemFlags::CROWN, 8, 4); },
         _ => {}
     }
+}
+
+fn create_description(world: &mut World, room: i32, word: &'static str, description: &'static str) {
+    world.create_entity()
+        .with(BelongsToRoom { room: room })
+        .with(Description::new(word, description))
+        .build();
 }
 
 fn create_edge_exit_entity(world: &mut World, room: i32, x: i32, y: i32, direction: ExitDirection, to_room: i32) {
