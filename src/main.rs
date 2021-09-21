@@ -1,4 +1,4 @@
-use rltk::{Rltk, GameState};
+use rltk::{Rltk, GameState, BTermBuilder, InitHints};
 use specs::prelude::*;
 
 mod input;
@@ -8,6 +8,7 @@ mod hud;
 mod room;
 mod ai;
 mod inventory;
+mod items;
 
 pub struct State {
     world: World,
@@ -116,8 +117,12 @@ impl GameState for State {
 
 fn main() -> rltk::BError {
     use rltk::RltkBuilder;
-    let terminal_builder = RltkBuilder::simple(40,25)?;
+    let terminal_builder = RltkBuilder::new();
     let context = terminal_builder
+        .with_dimensions(40, 25)
+        .with_tile_dimensions(10, 10)
+        .with_font("castle10x10.png", 10, 10)
+        .with_simple_console(40, 25, "castle10x10.png")
         .with_title("Castle Adventure!")
         .build()?;
     
@@ -129,8 +134,6 @@ fn main() -> rltk::BError {
     register_components(&mut game_state.world);
 
     game::create_player_entity(&mut game_state.world);
-    inventory::test_item(&mut game_state.world);
-    ai::create_test_ai(&mut game_state.world);
 
     room::load_rooms(&mut game_state.world);
     room::change_room(&mut game_state.world, 0, -1);

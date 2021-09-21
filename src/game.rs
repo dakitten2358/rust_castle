@@ -37,7 +37,7 @@ pub fn create_player_entity(world: &mut World) {
         .with(ColliderComponent{})
         .with(ActiveDescriptionComponent::new())
         .with(InventoryComponent::new())
-        //.with(DebugHudComponent{})
+        .with(DebugHudComponent{})
         .build();
 }
 
