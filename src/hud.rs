@@ -4,6 +4,7 @@ use specs_derive::Component;
 use crate::room::{RoomData};
 use crate::game::{Player, ActiveDescriptionComponent};
 use crate::input::{PlayerTextInputComponent};
+use crate::combat::{CombatLog};
 
 #[allow(dead_code)]
 pub struct HudSystem<'a> {
@@ -49,7 +50,7 @@ impl<'a> HudSystem<'a> {
 
     fn print_action_result(&mut self, active_description: &String) {
         let start_x = 25;
-        let start_y = 12;
+        let start_y = 11;
 
         let mut current_x = start_x;
         let mut current_y = start_y;
@@ -71,6 +72,16 @@ impl<'a> HudSystem<'a> {
             current_x += text_length + space_length;
         }
     }
+
+    fn print_combat_logs(&mut self, combat_log: &CombatLog) {
+        let start_x = 25;
+        let start_y = 17;
+        let mut current_y = start_y;
+        for text in combat_log.logs.iter() {
+            self.context.print(start_x, current_y, text);
+            current_y += 1;
+        }
+    }
 }
 
 fn draw_border_piece(context: &mut rltk::Rltk, x: i32, y: i32, glyph: char) {
@@ -78,9 +89,15 @@ fn draw_border_piece(context: &mut rltk::Rltk, x: i32, y: i32, glyph: char) {
 }
 
 impl<'a> System<'a> for HudSystem<'_> {
-    type SystemData = (ReadStorage<'a, Player>, ReadStorage<'a, PlayerTextInputComponent>, ReadStorage<'a, ActiveDescriptionComponent>, ReadExpect<'a, Vec<RoomData>>);
+    type SystemData = (
+        ReadStorage<'a, Player>, 
+        ReadStorage<'a, PlayerTextInputComponent>, 
+        ReadStorage<'a, ActiveDescriptionComponent>, 
+        ReadExpect<'a, Vec<RoomData>>,
+        ReadStorage<'a, CombatLog>,
+    );
 
-    fn run(&mut self, (_players, player_text_inputs, active_descriptions, room_datas): Self::SystemData) {
+    fn run(&mut self, (_players, player_text_inputs, active_descriptions, room_datas, combat_logs): Self::SystemData) {
         self.draw_map_border();
 
         let room_data = &room_datas[self.room as usize];
@@ -92,6 +109,10 @@ impl<'a> System<'a> for HudSystem<'_> {
 
         for active_description in active_descriptions.join() {
             self.print_action_result(&active_description.description);
+        }
+
+        for combat_log in combat_logs.join() {
+            self.print_combat_logs(&combat_log);
         }
     }
 }

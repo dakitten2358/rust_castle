@@ -9,6 +9,7 @@ mod room;
 mod ai;
 mod inventory;
 mod items;
+mod combat;
 
 pub struct State {
     world: World,
@@ -42,17 +43,20 @@ impl State {
         let mut player_commands = game::PlayerTextCommandSystem{};
         player_commands.run_now(&self.world);
 
-        // only run AI, etc _if_ the player moved
-        if apply_player_movement_input.player_moved {
-
-        }
-
         let mut movement_system = game::MovementSystem::new();
         movement_system.run_now(&self.world);
 
         let mut pickups = inventory::PickupTriggerSystem::new();
         pickups.run_now(&self.world);
         self.handle_state_action(pickups.state_action);
+
+        if apply_player_movement_input.player_moved {
+            let mut melee_system = combat::MeleeCombatSystem{};
+            melee_system.run_now(&self.world);
+
+            let mut damage_system = combat::DamageSystem{};
+            damage_system.run_now(&self.world);
+        }
 
         let mut exit_trigger_system = game::ExitTriggerSystem::new();
         exit_trigger_system.run_now(&self.world);
@@ -152,6 +156,13 @@ fn register_components(world: &mut World)
     world.register::<ai::AiMoveToPlayer>();
     world.register::<inventory::InventoryComponent>();
     world.register::<inventory::PickupTrigger>();
+    world.register::<combat::CombatStats>();
+    world.register::<combat::ApplyDamageComponent>();
+    world.register::<combat::AppliesDamage>();
+    world.register::<combat::WantsToAttack>();
+    world.register::<combat::DeadTag>();
+    world.register::<game::Name>();
+    world.register::<combat::CombatLog>();
 }
 
 fn terminal_builder(scale: i32) -> rltk::RltkBuilder {

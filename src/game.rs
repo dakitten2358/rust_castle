@@ -7,6 +7,7 @@ use crate::input::{PlayerInputMappingComponent, PlayerInputComponent, PlayerText
 use crate::render::{Renderable};
 use crate::StateAction;
 use crate::inventory::{InventoryComponent};
+use crate::combat::{CombatStats, CombatLog};
 
 #[allow(unused_imports)]
 use crate::hud::{DebugHudComponent};
@@ -20,6 +21,12 @@ pub struct Position {
 impl Position {
     pub fn distance_sq(a: &Position, b: &Position) -> i32 { (b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y) }
     pub fn delta(a: &Position, b: &Position) -> (i32, i32) { (b.x - a.x, b.y - a.y) }
+    pub fn equals_xy(&self, x: i32, y: i32) -> bool { self.x == x && self.y == y }
+}
+
+#[derive(Component)]
+pub struct Name {
+    pub text: String,
 }
 
 #[derive(Component)]
@@ -38,6 +45,10 @@ pub fn create_player_entity(world: &mut World) {
         .with(ActiveDescriptionComponent::new())
         .with(InventoryComponent::new())
         .with(DebugHudComponent{})
+        .with(CombatStats { max_health: 10, health: 10 })
+        .with(Name { text: "player".to_string() })
+        .with(CombatLog::new())
+        //.with(DebugHudComponent{})
         .build();
 }
 
@@ -47,6 +58,8 @@ pub struct Movement {
     cumulative_y_movement: i32,
 
     moved_this_frame: bool,
+    attempted_x_movement: i32,
+    attempted_y_movement: i32,
 }
 
 impl Movement {
@@ -55,6 +68,9 @@ impl Movement {
             cumulative_x_movement: 0,
             cumulative_y_movement: 0,
             moved_this_frame: false,
+
+            attempted_x_movement: 0,
+            attempted_y_movement: 0,
         }
     }
 
@@ -64,12 +80,16 @@ impl Movement {
     }
 
     pub fn clear_movement(&mut self) {
+        let (attempt_x, attempt_y) = self.get_movement_input();
+        self.attempted_x_movement = attempt_x;
+        self.attempted_y_movement = attempt_y;
+
         self.cumulative_x_movement = 0;
         self.cumulative_y_movement = 0;
         self.moved_this_frame = false;
     }
 
-    pub fn get_movement_input(&self) -> (i32, i32) {
+    fn get_movement_input(&self) -> (i32, i32) {
         (min(1, max(-1, self.cumulative_x_movement)), min(1, max(-1, self.cumulative_y_movement)))       
     }
 
@@ -79,6 +99,18 @@ impl Movement {
 
     pub fn did_move(&self) -> bool {
         self.moved_this_frame
+    }
+
+    fn attempted_to_move(&self) -> bool {
+        self.attempted_x_movement != 0 || self.attempted_y_movement != 0
+    }
+
+    pub fn was_move_blocked(&self) -> bool {
+        !self.did_move() && self.attempted_to_move()
+    }
+
+    pub fn get_attempted_move(&self) -> (i32, i32) {
+        (self.attempted_x_movement, self.attempted_y_movement)
     }
 }
 

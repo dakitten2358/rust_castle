@@ -3,6 +3,7 @@ use specs_derive::Component;
 
 use crate::game::*;
 use crate::render::Renderable;
+use crate::combat::{CombatStats, AppliesDamage};
 
 #[derive(Component)]
 pub struct AiMoveToPlayer {}
@@ -14,6 +15,9 @@ pub fn create_test_ai(world: &mut World) {
         .with(Movement::new())
         .with(ColliderComponent{})
         .with(AiMoveToPlayer{})
+        .with(CombatStats { max_health: 10, health: 10 })
+        .with(AppliesDamage { damage: 10 })
+        .with(Name { text: "ai".to_string() })
         .build();
 }
 
