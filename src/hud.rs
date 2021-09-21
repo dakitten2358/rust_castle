@@ -12,6 +12,10 @@ pub struct HudSystem<'a> {
     room: i32,
 }
 
+// 10 lines for on screen items
+// 2 lines blank
+// 5 lines for log
+
 impl<'a> HudSystem<'a> {
     pub fn new(state: &'a crate::State, with_context: &'a mut rltk::Rltk, room: i32) -> Self {
         Self {

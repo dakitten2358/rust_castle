@@ -19,28 +19,28 @@ pub fn test_item(world: &mut World) {
 bitflags! {
     pub struct ItemFlags: u32 {
         const EMPTY         = 0;
-        const LAMP          = 1 << 0;
-        const SCEPTER       = 1 << 1;
-        const BOOK          = 1 << 2;
-        const MAGICWAND     = 1 << 3;
-        const SWORD         = 1 << 4;
-        const KEY           = 1 << 5;
-        const EYEGLASSES    = 1 << 6;
-        const HELMET        = 1 << 7;
-        const WINEFLASK     = 1 << 8;
-        const CRYSTALBALL   = 1 << 9;
-        const NECKLACE      = 1 << 10;
-        const HOLYCROSS     = 1 << 11;
-        const DIAMOND       = 1 << 12;
-        const SILVERBARS    = 1 << 13;
-        const RUBIES        = 1 << 14;
-        const JADEFIGURINE  = 1 << 15;
-        const HARP          = 1 << 16;
-        const HOURGLASS     = 1 << 17;
-        const LARGEGEM      = 1 << 18;
-        const GOLDBAR       = 1 << 19;
-        const FANCYGOBLET   = 1 << 20;
-        const CROWN         = 1 << 21;
+        const LAMP          = 1 << 0;       // 2660
+        const SCEPTER       = 1 << 1;       // 00DF
+        const BOOK          = 1 << 2;       // 2584
+        const MAGICWAND     = 1 << 3;       // 2500
+        const SWORD         = 1 << 4;       // 253C
+        const KEY           = 1 << 5;       // 03C4 
+        const EYEGLASSES    = 1 << 6;       // 221E
+        const HELMET        = 1 << 7;       // 00A2
+        const WINEFLASK     = 1 << 8;       // 0021 or 00A1
+        const CRYSTALBALL   = 1 << 9;       // 00B0
+        const NECKLACE      = 1 << 10;      // 00A7
+        const HOLYCROSS     = 1 << 11;      // 0074
+        const DIAMOND       = 1 << 12;      // 2666
+        const SILVERBARS    = 1 << 13;      // 2261
+        const RUBIES        = 1 << 14;      // 003A
+        const JADEFIGURINE  = 1 << 15;      // 00A5
+        const HARP          = 1 << 16;      // 266B
+        const HOURGLASS     = 1 << 17;      // 03A6
+        const LARGEGEM      = 1 << 18;      // 0398
+        const GOLDBAR       = 1 << 19;      // 25A0
+        const FANCYGOBLET   = 1 << 20;      // 00B5
+        const CROWN         = 1 << 21;      // 2302
     }
 }
 
