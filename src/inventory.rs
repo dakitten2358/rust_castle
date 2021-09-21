@@ -9,7 +9,7 @@ use crate::game::{Player, Position, Movement};
 pub fn test_item(world: &mut World) {
     world.create_entity()
         .with(Position{ x: 10, y: 7})
-        .with(crate::render::Renderable::new_with_z('\u{2660}', rltk::WHITE, 1))
+        .with(crate::render::Renderable::new_with_z('\u{2660}', rltk::WHITE, 0))
         .with(PickupTrigger{item_to_pickup: ItemFlags::LAMP})
         //.with(DebugHudComponent{})
         .build();
@@ -41,6 +41,7 @@ bitflags! {
         const GOLDBAR       = 1 << 19;      // 25A0
         const FANCYGOBLET   = 1 << 20;      // 00B5
         const CROWN         = 1 << 21;      // 2302
+        const ANYTHING      = 0b1111111111111111111111111111111;
     }
 }
 
