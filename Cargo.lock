@@ -1419,6 +1419,7 @@ dependencies = [
 name = "rust_castle"
 version = "0.1.0"
 dependencies = [
+ "bitflags",
  "regex",
  "rltk",
  "specs",

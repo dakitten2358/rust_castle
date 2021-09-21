@@ -5,6 +5,8 @@ use std::str::FromStr;
 
 use crate::input::{PlayerInputMappingComponent, PlayerInputComponent, PlayerTextInputComponent};
 use crate::render::{Renderable};
+use crate::StateAction;
+use crate::inventory::{InventoryComponent};
 
 #[allow(unused_imports)]
 use crate::hud::{DebugHudComponent};
@@ -34,6 +36,7 @@ pub fn create_player_entity(world: &mut World) {
         .with(Movement::new())
         .with(ColliderComponent{})
         .with(ActiveDescriptionComponent::new())
+        .with(InventoryComponent::new())
         //.with(DebugHudComponent{})
         .build();
 }
@@ -145,7 +148,7 @@ impl<'a> System<'a> for ApplyPlayerMovementInputSystem {
 pub struct ColliderComponent {}
 
 pub struct ExitTriggerSystem{
-    pub exit_data: Option<crate::room::ExitData>,
+    pub state_action: StateAction,
 }
 
 impl<'a> System<'a> for ExitTriggerSystem {
@@ -156,20 +159,19 @@ impl<'a> System<'a> for ExitTriggerSystem {
             if movement.did_move() {
                 for (exit_trigger, exit_position) in (&exit_triggers, &positions).join() {
                     if position == exit_position {
-                        self.exit_data = Some(crate::room::ExitData{ direction: exit_trigger.from_direction, to_room: exit_trigger.to_room });
+                        self.state_action = StateAction::ChangeRoom { direction: exit_trigger.from_direction, to_room: exit_trigger.to_room };
                         return;
                     }
                 }
             }
         }
-        self.exit_data = None;
     }
 }
 
 impl ExitTriggerSystem {
     pub fn new() -> Self {
         Self {
-            exit_data: None,
+            state_action: StateAction::None,
         }
     }
 }

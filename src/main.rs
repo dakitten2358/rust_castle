@@ -14,6 +14,12 @@ pub struct State {
     room: i32,
 }
 
+pub enum StateAction {
+    None,
+    DeleteEntities {entities: Vec<Entity>},
+    ChangeRoom {direction: room::ExitDirection, to_room: i32},
+}
+
 impl State {
     fn run_systems(&mut self, context: &mut Rltk) {
         // requires mutable context
@@ -45,13 +51,12 @@ impl State {
 
         let mut pickups = inventory::PickupTriggerSystem::new();
         pickups.run_now(&self.world);
+        self.handle_state_action(pickups.state_action);
 
         let mut exit_trigger_system = game::ExitTriggerSystem::new();
         exit_trigger_system.run_now(&self.world);
-        match exit_trigger_system.exit_data {
-            Some(exit_data) => self.change_room(exit_data.to_room, exit_data.direction),
-            None => {}
-        }
+        self.handle_state_action(exit_trigger_system.state_action);
+
         self.world.maintain();
     }
 
@@ -86,6 +91,20 @@ impl State {
             }
         }
     }
+
+    fn handle_state_action(&mut self, action: StateAction) {
+        match action {
+            StateAction::DeleteEntities {entities} => {
+                for entity in entities {
+                    self.world.delete_entity(entity).expect("Failed to delete an entity!");
+                }
+            },
+            StateAction::ChangeRoom {direction, to_room} => {
+                self.change_room(to_room, direction);
+            }
+            StateAction::None => {},
+        }
+    }
 }
 
 impl GameState for State {
@@ -110,6 +129,7 @@ fn main() -> rltk::BError {
     register_components(&mut game_state.world);
 
     game::create_player_entity(&mut game_state.world);
+    inventory::test_item(&mut game_state.world);
     ai::create_test_ai(&mut game_state.world);
 
     room::load_rooms(&mut game_state.world);
