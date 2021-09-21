@@ -98,7 +98,7 @@ pub fn create_item_at(world: &mut World, room: i32, item_type: ItemFlags, x: i32
         _ => {
             world.create_entity()
                 .with(Position{ x: x, y: y})
-                .with(crate::render::Renderable::new_with_z(item_to_glyph(item_type), rltk::GREY, 1))
+                .with(crate::render::Renderable::new_with_z(item_to_glyph(item_type), rltk::WHITE, 1))
                 .with(PickupTrigger{item_to_pickup: item_type})
                 .with(crate::room::BelongsToRoom { room: room })
                 .build();

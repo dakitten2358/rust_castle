@@ -117,13 +117,7 @@ impl GameState for State {
 
 fn main() -> rltk::BError {
     use rltk::RltkBuilder;
-    let terminal_builder = RltkBuilder::new();
-    let context = terminal_builder
-        .with_dimensions(40, 25)
-        .with_tile_dimensions(10, 10)
-        .with_font("castle10x10.png", 10, 10)
-        .with_simple_console(40, 25, "castle10x10.png")
-        .with_title("Castle Adventure!")
+    let context = terminal_builder(2)
         .build()?;
     
     let mut game_state = State {
@@ -158,4 +152,16 @@ fn register_components(world: &mut World)
     world.register::<ai::AiMoveToPlayer>();
     world.register::<inventory::InventoryComponent>();
     world.register::<inventory::PickupTrigger>();
+}
+
+fn terminal_builder(scale: i32) -> rltk::RltkBuilder {
+    use rltk::RltkBuilder;
+    let terminal_builder = RltkBuilder::new();
+    let context = terminal_builder
+        .with_dimensions(40, 25)
+        .with_tile_dimensions(10 * scale, 10 * scale)
+        .with_font("castle10x10.png", 10, 10)
+        .with_simple_console(40, 25, "castle10x10.png")
+        .with_title("Castle Adventure!");
+    context       
 }
