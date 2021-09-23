@@ -2,8 +2,7 @@ use bitflags::bitflags;
 use std::fmt;
 use specs::prelude::*;
 
-use crate::inventory::PickupTrigger;
-use crate::game::{Position, Description};
+use crate::components::{Position, Description, PickupTrigger};
 
 bitflags! {
     pub struct ItemFlags: u32 {

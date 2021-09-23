@@ -1,10 +1,7 @@
 use specs::prelude::*;
-use specs_derive::Component;
 
 use crate::room::{RoomData};
-use crate::game::{Player, ActiveDescriptionComponent, Description};
-use crate::input::{PlayerTextInputComponent};
-use crate::combat::{CombatLog};
+use crate::components::*;
 use crate::render::Renderable;
 
 #[allow(dead_code)]
@@ -133,9 +130,6 @@ impl<'a> System<'a> for HudSystem<'a> {
         self.print_glyph_descriptions(&renderables, &descriptions);
     }
 }
-
-#[derive(Component)]
-pub struct DebugHudComponent {}
 
 #[allow(dead_code)]
 pub struct DebugHudSystem<'a> {

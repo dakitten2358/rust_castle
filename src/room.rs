@@ -5,7 +5,7 @@ use std::str;
 use regex::Regex;
 use specs_derive::Component;
 
-use crate::game::{Position, ColliderComponent, Description};
+use crate::components::{Position, ColliderComponent, Description};
 use crate::render::{Renderable};
 use crate::items::{create_item_at, ItemFlags};
 

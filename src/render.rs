@@ -2,7 +2,7 @@ use rltk::{RGB};
 use specs::prelude::*;
 use specs_derive::Component;
 
-use crate::game::{Position};
+use crate::components::{Position};
 
 #[derive(Component)]
 pub struct Renderable {

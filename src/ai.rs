@@ -1,13 +1,15 @@
 use specs::prelude::*;
 use specs_derive::Component;
 
-use crate::game::*;
+use crate::components::*;
+
 use crate::render::Renderable;
-use crate::combat::{CombatStats, AppliesDamage};
+use crate::components::{CombatStats, AppliesDamage};
 
 #[derive(Component)]
 pub struct AiMoveToPlayer {}
 
+#[allow(dead_code)]
 pub fn create_test_ai(world: &mut World) {
     world.create_entity()
         .with(Position{ x: 4, y: 4})

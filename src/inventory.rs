@@ -1,30 +1,7 @@
 use specs::prelude::*;
-use specs_derive::Component;
 
 use crate::{StateAction};
-use crate::game::{Player, Position, Movement};
-use crate::items::{ItemFlags};
-
-#[derive(Component, Debug)]
-pub struct PickupTrigger {
-    pub item_to_pickup: ItemFlags,
-}
-
-#[derive(Component)]
-pub struct InventoryComponent {
-    items: ItemFlags,
-}
-
-impl InventoryComponent {
-    pub fn new() -> Self {
-        Self {
-            items: ItemFlags::EMPTY,
-        }
-    }
-    pub fn add(&mut self, item: ItemFlags) {
-        self.items |= item;
-    }
-}
+use crate::components::{Player, Position, Movement, PickupTrigger, InventoryComponent};
 
 pub struct PickupTriggerSystem {
     pub state_action: StateAction,

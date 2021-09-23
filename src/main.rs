@@ -1,4 +1,4 @@
-use rltk::{Rltk, GameState, BTermBuilder, InitHints};
+use rltk::{Rltk, GameState};
 use specs::prelude::*;
 
 mod input;
@@ -10,6 +10,9 @@ mod ai;
 mod inventory;
 mod items;
 mod combat;
+mod components;
+
+use crate::components::*;
 
 pub struct State {
     world: World,
@@ -86,7 +89,7 @@ impl State {
         room::change_room(&mut self.world, self.room, old_room);
 
         // adjust player position if needed
-        for (_player, position) in (&self.world.read_storage::<game::Player>(), &mut self.world.write_storage::<game::Position>()).join() {
+        for (_player, position) in (&self.world.read_storage::<Player>(), &mut self.world.write_storage::<Position>()).join() {
             match direction {
                 room::ExitDirection::North => { position.y = 17; },
                 room::ExitDirection::South => { position.y = 0;},
@@ -140,29 +143,29 @@ fn main() -> rltk::BError {
 
 fn register_components(world: &mut World)
 {
-    world.register::<input::PlayerInputComponent>();
-    world.register::<input::PlayerTextInputComponent>();
-    world.register::<input::PlayerInputMappingComponent>();
+    world.register::<PlayerInputComponent>();
+    world.register::<PlayerTextInputComponent>();
+    world.register::<PlayerInputMappingComponent>();
     world.register::<render::Renderable>();
-    world.register::<game::Position>();
-    world.register::<game::Player>();
-    world.register::<game::Movement>();
-    world.register::<game::ColliderComponent>();
+    world.register::<Position>();
+    world.register::<Player>();
+    world.register::<Movement>();
+    world.register::<ColliderComponent>();
     world.register::<room::BelongsToRoom>();
     world.register::<room::ExitTrigger>();
-    world.register::<hud::DebugHudComponent>();
-    world.register::<game::ActiveDescriptionComponent>();
+    world.register::<DebugHudComponent>();
+    world.register::<ActiveDescriptionComponent>();
     world.register::<ai::AiMoveToPlayer>();
-    world.register::<inventory::InventoryComponent>();
-    world.register::<inventory::PickupTrigger>();
-    world.register::<combat::CombatStats>();
-    world.register::<combat::ApplyDamageComponent>();
-    world.register::<combat::AppliesDamage>();
-    world.register::<combat::WantsToAttack>();
-    world.register::<combat::DeadTag>();
-    world.register::<game::DebugName>();
-    world.register::<combat::CombatLog>();
-    world.register::<game::Description>();
+    world.register::<InventoryComponent>();
+    world.register::<PickupTrigger>();
+    world.register::<CombatStats>();
+    world.register::<ApplyDamageComponent>();
+    world.register::<AppliesDamage>();
+    world.register::<WantsToAttack>();
+    world.register::<DeadTag>();
+    world.register::<DebugName>();
+    world.register::<CombatLog>();
+    world.register::<Description>();
 }
 
 fn terminal_builder(scale: i32) -> rltk::RltkBuilder {

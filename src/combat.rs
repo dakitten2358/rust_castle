@@ -1,53 +1,7 @@
 use specs::prelude::*;
-use specs_derive::Component;
-
-use crate::game::{Movement, Position};
-
-#[derive(Component)]
-pub struct CombatStats {
-    pub health: i32,
-    pub max_health: i32,
-}
-
-#[derive(Component)]
-pub struct AppliesDamage {
-    pub damage: i32,
-}
-
-#[derive(Component)]
-pub struct ApplyDamageComponent {
-    pub amounts: Vec::<i32>,
-    pub instigator: Entity,
-}
-
-#[derive(Component)]
-pub struct WantsToAttack {
-    pub target: Entity,
-}
-
-#[derive(Component)]
-pub struct DeadTag {}
-
-#[derive(Component)]
-pub struct CombatLog {
-    pub logs: Vec<String>,
-}
-
-impl CombatLog {
-    pub fn new() -> Self {
-        Self {
-            logs: vec!["".to_string(), "".to_string()],
-        }
-    }
-
-    pub fn push(&mut self, text: String) {
-        self.logs[0] = self.logs[1].clone();
-        self.logs[1] = text.clone();
-    }
-}
+use crate::components::*;
 
 pub struct DamageSystem {}
-
 
 fn kill(target: Entity, dead_tags: &mut WriteStorage<DeadTag>) {
     dead_tags.insert(target, DeadTag{}).expect("failed to add kill tag!");
