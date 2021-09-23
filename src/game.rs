@@ -1,8 +1,11 @@
 use specs::prelude::*;
+use specs::saveload::*;
 
 use crate::render::{Renderable};
 use crate::StateAction;
 use crate::components::*;
+
+pub struct DynamicMarker;
 
 pub fn create_player_entity(world: &mut World) {
     world.create_entity()
@@ -21,6 +24,7 @@ pub fn create_player_entity(world: &mut World) {
         .with(DebugName { text: "player".to_string() })
         .with(CombatLog::new())
         .with(DebugHudComponent{})
+        .marked::<SimpleMarker<DynamicMarker>>()
         .build();
 }
 

@@ -1,5 +1,8 @@
 use rltk::{Rltk, GameState};
 use specs::prelude::*;
+use specs::saveload::*;
+use std::fs::File;
+use specs::error::NoError;
 
 mod input;
 mod render;
@@ -13,6 +16,21 @@ mod combat;
 mod components;
 
 use crate::components::*;
+
+
+macro_rules! serialize_individually {
+    ($ecs:expr, $ser:expr, $data:expr, $( $type:ty),*) => {
+        $(
+        SerializeComponents::<NoError, SimpleMarker<game::DynamicMarker>>::serialize(
+            &( $ecs.read_storage::<$type>(), ),
+            &$data.0,
+            &$data.1,
+            &mut $ser,
+        )
+        .unwrap();
+        )*
+    };
+}
 
 pub struct State {
     world: World,
@@ -100,6 +118,8 @@ impl State {
                 _ => {}
             }
         }
+
+        self.save_stuff();
     }
 
     fn handle_state_action(&mut self, action: StateAction) {
@@ -117,6 +137,13 @@ impl State {
             }
             StateAction::None => {},
         }
+    }
+
+    fn save_stuff(&mut self) {
+        let data = (self.world.entities(), self.world.read_storage::<SimpleMarker<game::DynamicMarker>>());
+        let writer = File::create("./savegame.json").unwrap();
+        let mut serializer = serde_json::Serializer::new(writer);
+        serialize_individually!(self.world, serializer, data, Position, Player);
     }
 }
 
@@ -136,6 +163,7 @@ fn main() -> rltk::BError {
         room: 0
     };
 
+    register_markers(&mut game_state.world);
     register_components(&mut game_state.world);
 
     game::create_player_entity(&mut game_state.world);
@@ -144,6 +172,12 @@ fn main() -> rltk::BError {
     room::change_room(&mut game_state.world, 0, -1);
 
     rltk::main_loop(context, game_state)
+}
+
+fn register_markers(world: &mut World)
+{
+    world.register::<SimpleMarker<game::DynamicMarker>>();
+    world.insert(SimpleMarkerAllocator::<game::DynamicMarker>::default());
 }
 
 fn register_components(world: &mut World)

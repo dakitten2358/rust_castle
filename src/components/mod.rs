@@ -27,7 +27,7 @@ impl Description {
     }
 }
 
-#[derive(Component, Serialize, Deserialize)]
+#[derive(Component, Serialize, Deserialize, Clone)]
 pub struct Player {}
 
 #[derive(Component, Serialize, Deserialize)]

@@ -24,4 +24,3 @@ pub struct ColliderComponent {}
 pub struct DebugName {
     pub text: String,
 }
-
