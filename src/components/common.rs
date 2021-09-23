@@ -1,9 +1,11 @@
 use serde::{Serialize, Deserialize};
 use specs::prelude::*;
-use specs_derive::Component;
+use specs_derive::{Component, ConvertSaveload};
+use specs::saveload::{Marker, ConvertSaveload};
+use specs::error::NoError;
 use std::cmp::*;
 
-#[derive(Component, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Component, Clone, PartialEq, ConvertSaveload)]
 pub struct Position {
     pub x: i32,
     pub y: i32,
@@ -18,7 +20,7 @@ impl Position {
 #[derive(Component)]
 pub struct ColliderComponent {}
 
-#[derive(Component, Serialize, Deserialize)]
+#[derive(Component, ConvertSaveload)]
 pub struct DebugName {
     pub text: String,
 }

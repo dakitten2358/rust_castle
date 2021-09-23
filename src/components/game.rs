@@ -1,9 +1,10 @@
 use rltk::VirtualKeyCode;
+use serde::{Serialize, Deserialize};
 use specs::prelude::*;
 use specs_derive::Component;
 use crate::items::ItemFlags;
 
-#[derive(Component)]
+#[derive(Component, Serialize, Deserialize)]
 pub struct CombatStats {
     pub health: i32,
     pub max_health: i32,
@@ -28,7 +29,7 @@ pub struct WantsToAttack {
 #[derive(Component)]
 pub struct DeadTag {}
 
-#[derive(Component)]
+#[derive(Component, Serialize, Deserialize)]
 pub struct CombatLog {
     pub logs: Vec<String>,
 }
@@ -46,7 +47,7 @@ impl CombatLog {
     }
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Serialize, Deserialize)]
 pub struct PlayerInputComponent {
     pub move_left: bool,
     pub move_right: bool,
@@ -72,7 +73,7 @@ impl PlayerInputComponent {
     }
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Serialize, Deserialize)]
 pub struct PlayerInputMappingComponent {}
 
 impl PlayerInputMappingComponent {
@@ -89,7 +90,7 @@ impl PlayerInputMappingComponent {
     }
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, Serialize, Deserialize)]
 pub struct PlayerTextInputComponent {
     input_text: String,
     submitted: bool,
@@ -155,7 +156,7 @@ pub struct PickupTrigger {
     pub item_to_pickup: ItemFlags,
 }
 
-#[derive(Component)]
+#[derive(Component, Serialize, Deserialize)]
 pub struct InventoryComponent {
     items: ItemFlags,
 }

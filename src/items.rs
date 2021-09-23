@@ -1,10 +1,12 @@
 use bitflags::bitflags;
 use std::fmt;
 use specs::prelude::*;
+use serde::{Serialize, Deserialize};
 
 use crate::components::{Position, Description, PickupTrigger};
 
 bitflags! {
+    #[derive(Serialize, Deserialize)]
     pub struct ItemFlags: u32 {
         const EMPTY         = 0;
         const LAMP          = 1 << 0;       // 2660

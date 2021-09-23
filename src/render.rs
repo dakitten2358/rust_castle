@@ -1,10 +1,11 @@
 use rltk::{RGB};
 use specs::prelude::*;
 use specs_derive::Component;
+use serde::{Serialize, Deserialize};
 
 use crate::components::{Position};
 
-#[derive(Component)]
+#[derive(Component, Serialize, Deserialize)]
 pub struct Renderable {
     pub glyph: rltk::FontCharType,
     pub color: RGB,

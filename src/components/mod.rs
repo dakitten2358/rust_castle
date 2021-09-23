@@ -93,7 +93,7 @@ impl Movement {
 }
 
 
-#[derive(Component)]
+#[derive(Component, Serialize, Deserialize)]
 pub struct ActiveDescriptionComponent {
     pub description: String,
 }
@@ -110,5 +110,5 @@ impl ActiveDescriptionComponent {
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Serialize, Deserialize)]
 pub struct DebugHudComponent {}
