@@ -273,6 +273,7 @@ fn main() -> rltk::BError {
     game::create_player_entity(&mut game_state.world);
 
     room::load_rooms(&mut game_state.world);
+    room::load_dynamic_rooms(&mut game_state.world);
     room::change_room(&mut game_state.world, 0, -1);
 
     rltk::main_loop(context, game_state)

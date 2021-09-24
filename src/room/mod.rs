@@ -12,6 +12,9 @@ use crate::components::{ColliderComponent, Description, Position};
 use crate::items::{create_item_at, ItemFlags};
 use crate::render::Renderable;
 
+pub mod dynamic_rooms;
+pub use dynamic_rooms::*;
+
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ExitDirection {
     Invalid,
@@ -77,6 +80,7 @@ impl RoomData {
     }
 }
 
+
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct BelongsToRoom {
     pub room: i32,
@@ -108,6 +112,7 @@ pub fn change_room(world: &mut World, new_room: i32, old_room: i32) {
     // set up the new room
     let room_data = get_room_data(world, new_room);
     create_room_entities(world, new_room, &room_data);
+    create_dynamic_room_entities(world, new_room);
 }
 
 fn find_entities_to_remove(world: &mut World, old_room: i32) -> Vec<Entity> {
@@ -224,73 +229,6 @@ pub fn create_room_entities(world: &mut World, room: i32, room_data: &RoomData) 
             }
         }
     }
-
-    create_hardcoded_room_entities(world, room);
-}
-
-fn create_hardcoded_room_entities(world: &mut World, room: i32) {
-    match room {
-        0 => {
-            create_description(world, room, "gate", "it looks strong");
-        }
-        16 => {
-            create_item_at(world, room, ItemFlags::LAMP, 18, 13);
-        }
-        82 => {
-            create_item_at(world, room, ItemFlags::SCEPTER, 11, 9);
-        }
-        23 => {
-            create_item_at(world, room, ItemFlags::MAGICWAND, 3, 8);
-        }
-        11 => {
-            create_item_at(world, room, ItemFlags::SWORD, 10, 4);
-        }
-        21 => {
-            create_item_at(world, room, ItemFlags::HELMET, 11, 4);
-        }
-        65 => {
-            create_item_at(world, room, ItemFlags::CRYSTALBALL, 9, 12);
-        }
-        36 => {
-            create_item_at(world, room, ItemFlags::HOLYCROSS, 14, 12);
-        }
-        56 => {
-            create_item_at(world, room, ItemFlags::DIAMOND, 12, 9);
-        }
-        25 => {
-            create_item_at(world, room, ItemFlags::SILVERBARS, 6, 7);
-        }
-        59 => {
-            create_item_at(world, room, ItemFlags::RUBIES, 3, 15);
-        }
-        28 => {
-            create_item_at(world, room, ItemFlags::JADEFIGURINE, 12, 9);
-        }
-        64 => {
-            create_item_at(world, room, ItemFlags::HARP, 15, 7);
-        }
-        19 => {
-            create_item_at(world, room, ItemFlags::HOURGLASS, 5, 13);
-        }
-        73 => {
-            create_item_at(world, room, ItemFlags::GOLDBAR, 22, 13);
-        }
-        7 => {
-            create_item_at(world, room, ItemFlags::FANCYGOBLET, 5, 13);
-        }
-        13 => {
-            create_item_at(world, room, ItemFlags::CROWN, 8, 4);
-        }
-        _ => {}
-    }
-}
-
-fn create_description(world: &mut World, room: i32, word: &'static str, description: &'static str) {
-    world
-        .create_entity()
-        .with(BelongsToRoom { room: room })
-        .with(Description::new(word, description))
-        .build();
 }
 
 fn create_edge_exit_entity(

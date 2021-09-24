@@ -95,6 +95,34 @@ fn item_to_glyph(item_type: ItemFlags) -> char {
     }
 }
 
+pub fn name_to_item(item_name: &str) -> ItemFlags {
+    match item_name.to_ascii_lowercase().as_str() {
+        "lamp" => ItemFlags::LAMP,
+        "scepter" => ItemFlags::SCEPTER,
+        "book" => ItemFlags::BOOK,
+        "magicwand" => ItemFlags::MAGICWAND,
+        "sword" => ItemFlags::SWORD,
+        "key" => ItemFlags::KEY,
+        "eyeglasses" => ItemFlags::EYEGLASSES,
+        "helmet" => ItemFlags::HELMET,
+        "wineflask" => ItemFlags::WINEFLASK,
+        "crystalball" => ItemFlags::CRYSTALBALL,
+        "necklace" => ItemFlags::NECKLACE,
+        "holycross" => ItemFlags::HOLYCROSS,
+        "diamond" => ItemFlags::DIAMOND,
+        "silverbars" => ItemFlags::SILVERBARS,
+        "rubies" => ItemFlags::RUBIES,
+        "jadefigurine" => ItemFlags::JADEFIGURINE,
+        "harp" => ItemFlags::HARP,
+        "hourglass" => ItemFlags::HOURGLASS,
+        "largegem" => ItemFlags::LARGEGEM,
+        "goldbar" => ItemFlags::GOLDBAR,
+        "fancygoblet" => ItemFlags::FANCYGOBLET,
+        "crown" => ItemFlags::CROWN,
+        _ => ItemFlags::EMPTY,
+    }
+}
+
 pub fn item_to_description(item_type: ItemFlags) -> (&'static str, &'static str) {
     match item_type {
         ItemFlags::LAMP => ("Lamp", "It's bright!"),
