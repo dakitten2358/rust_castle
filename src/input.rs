@@ -45,6 +45,16 @@ impl<'a> PlayerInputSystem<'a> {
             VirtualKeyCode::Back => player_text_input.backspace(),
             VirtualKeyCode::Escape => player_text_input.clear_text(),
             VirtualKeyCode::Return => player_text_input.submit(),
+            VirtualKeyCode::Key0 => player_text_input.add_character('0'),
+            VirtualKeyCode::Key1 => player_text_input.add_character('1'),
+            VirtualKeyCode::Key2 => player_text_input.add_character('2'),
+            VirtualKeyCode::Key3 => player_text_input.add_character('3'),
+            VirtualKeyCode::Key4 => player_text_input.add_character('4'),
+            VirtualKeyCode::Key5 => player_text_input.add_character('5'),
+            VirtualKeyCode::Key6 => player_text_input.add_character('6'),
+            VirtualKeyCode::Key7 => player_text_input.add_character('7'),
+            VirtualKeyCode::Key8 => player_text_input.add_character('8'),
+            VirtualKeyCode::Key9 => player_text_input.add_character('9'),
             _ => {}
         }
     }

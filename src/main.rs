@@ -23,6 +23,7 @@ pub enum StateAction {
     None,
     DeleteEntities {entities: Vec<Entity>},
     ChangeRoom {direction: room::ExitDirection, to_room: i32},
+    Quit,
 }
 
 impl State {
@@ -43,8 +44,9 @@ impl State {
             ai.run_now(&self.world);
         }
 
-        let mut player_commands = game::PlayerTextCommandSystem{};
+        let mut player_commands = game::PlayerTextCommandSystem::new();
         player_commands.run_now(&self.world);
+        self.handle_state_action(player_commands.state_action);
 
         let mut movement_system = game::MovementSystem::new();
         movement_system.run_now(&self.world);
@@ -109,6 +111,9 @@ impl State {
             },
             StateAction::ChangeRoom {direction, to_room} => {
                 self.change_room(to_room, direction);
+            }
+            StateAction::Quit => {
+                std::process::exit(0);
             }
             StateAction::None => {},
         }

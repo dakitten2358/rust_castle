@@ -20,7 +20,7 @@ pub fn create_player_entity(world: &mut World) {
         .with(CombatStats { max_health: 10, health: 10 })
         .with(DebugName { text: "player".to_string() })
         .with(CombatLog::new())
-        //.with(DebugHudComponent{})
+        .with(DebugHudComponent{})
         .build();
 }
 
@@ -115,10 +115,18 @@ impl ExitTriggerSystem {
     }
 }
 
-pub struct PlayerTextCommandSystem {}
+pub struct PlayerTextCommandSystem {
+    pub state_action: StateAction,
+}
 
 impl PlayerTextCommandSystem {
-    fn process_text_input<'a>(&self, text_command: String, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
+    pub fn new() -> Self {
+        Self {
+            state_action: StateAction::None,
+        }
+    }
+
+    fn process_text_input<'a>(&mut self, text_command: &String, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
         let mut tokens = text_command.split_whitespace();
         match tokens.next()
         {
@@ -126,6 +134,7 @@ impl PlayerTextCommandSystem {
                 match token {
                     "look" => self.process_look(tokens.next(), descriptions),
                     "use" => self.process_use(tokens.next()),
+                    "quit" => self.process_quit(),
                     _ => None
                 }
             },
@@ -156,24 +165,61 @@ impl PlayerTextCommandSystem {
     fn process_use(&self, _use_target_name: Option<&str>) -> Option<String> {
         return Some("use item".to_string());
     }
+
+    fn process_quit(&mut self) -> Option<String> {
+        self.state_action = StateAction::Quit;
+        None
+    }
+
+    fn process_debug_input(&mut self, text_command: &String) {
+        let mut tokens = text_command.split_whitespace();
+        match tokens.next()
+        {
+            Some(token) => {
+                match token {
+                    "go" => self.process_debug_go(tokens.next()),
+                    _ => {}
+                }
+            },
+            None => {}
+        }
+    }
+
+    fn process_debug_go(&mut self, to_room_text: Option<&str>) {
+        match to_room_text {
+            Some(to_room_str) => {
+                if let Ok(to_room) = to_room_str.parse::<i32>() {
+                    self.state_action = StateAction::ChangeRoom { direction: crate::room::ExitDirection::Invalid, to_room: to_room };
+                } 
+            },
+            _ => {}
+        }
+    }
 }
 
 impl<'a> System<'a> for PlayerTextCommandSystem {
     type SystemData = (
+        Entities<'a>,
         ReadStorage<'a, Player>,
         WriteStorage<'a, PlayerTextInputComponent>,
         WriteStorage<'a, ActiveDescriptionComponent>,
         ReadStorage<'a, Description>,
+        ReadStorage<'a, DebugHudComponent>,
     );
 
-    fn run(&mut self, (players, mut text_inputs, mut active_descriptions, descriptions) : Self::SystemData) {
-        for(_player, text_input, description) in (&players, &mut text_inputs, &mut active_descriptions).join() {
+    fn run(&mut self, (entities, players, mut text_inputs, mut active_descriptions, descriptions, debugs) : Self::SystemData) {
+        self.state_action = StateAction::None;
+        for(entity, _player, text_input, description) in (&entities, &players, &mut text_inputs, &mut active_descriptions).join() {
             match text_input.consume() {
                 Some(text_command) => {
-                    match self.process_text_input(text_command, &descriptions)
+                    match self.process_text_input(&text_command, &descriptions)
                     {
                         Some(result) => description.set(result.as_str()),
                         None => description.set("i don't understand"),
+                    }
+
+                    if let Some(_debug) = debugs.get(entity) {
+                        self.process_debug_input(&text_command);
                     }
                 },
                 None => {}
