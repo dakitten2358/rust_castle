@@ -27,6 +27,14 @@ impl Description {
             description: description.to_string(),
         }
     }
+
+    pub fn new_explicit(input_name: &str, name: &str, description: &str) -> Self {
+        Self {
+            input_name: input_name.to_ascii_lowercase(),
+            name: name.to_string(),
+            description: description.to_string(),
+        }
+    }
 }
 
 #[derive(Component, Serialize, Deserialize, Clone)]

@@ -3,6 +3,7 @@ use specs::prelude::*;
 use crate::components::*;
 use crate::render::Renderable;
 use crate::StateAction;
+use itertools::Itertools;
 
 pub struct DynamicMarker;
 
@@ -172,25 +173,31 @@ impl PlayerTextCommandSystem {
         descriptions: &ReadStorage<'a, Description>,
     ) -> Option<String> {
         let mut tokens = text_command.split_whitespace();
-        match tokens.next() {
-            Some(token) => match token {
-                "look" => self.process_look(tokens.next(), descriptions),
-                "use" => self.process_use(tokens.next()),
-                "quit" => self.process_quit(),
-                _ => None,
+        let first_token = tokens.next();
+        let args_string = tokens.format(" ").to_string();
+        let args = args_string.as_str();
+        match first_token
+        {
+            Some(token) => {
+                match token {
+                    "look" => {
+                        self.process_look(args, descriptions)
+                    },
+                    "use" => self.process_use(args),
+                    "quit" => self.process_quit(),
+                    _ => None
+                }
             },
             None => None,
         }
     }
 
-    fn process_look<'a>(
-        &self,
-        look_at_target_name: Option<&str>,
-        descriptions: &ReadStorage<'a, Description>,
-    ) -> Option<String> {
+    fn process_look<'a>(&self, look_at_target_name: &str, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
         match look_at_target_name {
-            Some(target_name) => self.process_look_target(target_name, descriptions),
-            None => self.process_look_room(),
+            target_name if target_name.len() > 0 => {
+                self.process_look_target(target_name, descriptions)
+            },
+            _ => self.process_look_room(),
         }
     }
 
@@ -203,6 +210,9 @@ impl PlayerTextCommandSystem {
             if description.input_name == _target_name {
                 return Some(description.description.clone());
             }
+            if description.name.to_ascii_lowercase() == _target_name {
+                return Some(description.description.clone());
+            }
         }
         return Some("look at target".to_string());
     }
@@ -211,7 +221,7 @@ impl PlayerTextCommandSystem {
         return Some("look at room with long description here".to_string());
     }
 
-    fn process_use(&self, _use_target_name: Option<&str>) -> Option<String> {
+    fn process_use(&self, _use_target_name: &str) -> Option<String> {
         return Some("use item".to_string());
     }
 

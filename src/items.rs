@@ -123,31 +123,44 @@ pub fn name_to_item(item_name: &str) -> ItemFlags {
     }
 }
 
-pub fn item_to_description(item_type: ItemFlags) -> (&'static str, &'static str) {
+pub fn item_to_description(item_type: ItemFlags) -> (&'static str, &'static str, Option<&'static str>) {
     match item_type {
-        ItemFlags::LAMP => ("Lamp", "It's bright!"),
-        _ => ("", ""),
+        ItemFlags::LAMP => ("Lamp", "The lamp is magically lit!", None),
+        ItemFlags::SCEPTER => ("Scepter", "A firey ruby sits atop this powerful scepter", None),
+        ItemFlags::BOOK => ("Book", "The words are too blurry", None),
+        ItemFlags::MAGICWAND => ("Magic Wand", "A magical silver wand!", Some("wand")),
+        ItemFlags::SWORD => ("Sword", "", None),
+        ItemFlags::KEY => ("Key", "", None),
+        ItemFlags::EYEGLASSES => ("Eye Glasses", "", Some("glasses")),
+        ItemFlags::HELMET => ("Helmet", "", None),
+        ItemFlags::WINEFLASK => ("Wine Flask", "", Some("flask")),
+        ItemFlags::CRYSTALBALL => ("Crystal Ball", "", None),
+        ItemFlags::NECKLACE => ("Necklace", "", None),
+        ItemFlags::HOLYCROSS => ("Holy Cross", "", Some("cross")),
+        ItemFlags::DIAMOND => ("Diamond", "", None),
+        ItemFlags::SILVERBARS => ("Silver Bars", "shiny!", Some("silver")),
+        ItemFlags::RUBIES => ("Rubies", "", None),
+        ItemFlags::JADEFIGURINE => ("Jade Figurine", "", Some("figurine")),
+        ItemFlags::HARP => ("Harp", "", None),
+        ItemFlags::HOURGLASS => ("Hourglass", "", None),
+        ItemFlags::LARGEGEM => ("Large Gem", "", Some("gem")),
+        ItemFlags::GOLDBAR => ("Gold bar", "", Some("gold")),
+        ItemFlags::FANCYGOBLET => ("Fancy Goblet", "", Some("goblet")),
+        ItemFlags::CROWN => ("Crown", "", None),
+        _ => ("", "", None),
     }
 }
 
 pub fn create_item_at(world: &mut World, room: i32, item_type: ItemFlags, x: i32, y: i32) {
     match item_type {
         _ => {
-            let (name, description) = item_to_description(item_type);
-            world
-                .create_entity()
-                .with(Position { x: x, y: y })
-                .with(crate::render::Renderable::new_with_z(
-                    item_to_glyph(item_type),
-                    rltk::WHITE,
-                    1,
-                ))
-                .with(PickupTrigger {
-                    item_to_pickup: item_type,
-                })
+            let (name, description, input_name) = item_to_description(item_type);
+            world.create_entity()
+                .with(Position{ x: x, y: y})
+                .with(crate::render::Renderable::new_with_z(item_to_glyph(item_type), rltk::WHITE, 1))
+                .with(PickupTrigger{item_to_pickup: item_type})
                 .with(crate::room::BelongsToRoom { room: room })
-                .with(Description::new(name, description))
-                .marked::<SimpleMarker<DynamicMarker>>()
+                .with(if let Some(explicit_name) = input_name { Description::new_explicit(explicit_name, name, description)} else { Description::new(name, description) })
                 .build();
         }
     }
