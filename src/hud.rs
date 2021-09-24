@@ -1,8 +1,8 @@
 use specs::prelude::*;
 
-use crate::room::{RoomData};
 use crate::components::*;
 use crate::render::Renderable;
+use crate::room::RoomData;
 
 #[allow(dead_code)]
 pub struct HudSystem<'a> {
@@ -24,8 +24,7 @@ impl<'a> HudSystem<'a> {
         }
     }
 
-    fn draw_map_border(&mut self)
-    {
+    fn draw_map_border(&mut self) {
         for row in 0..18 {
             draw_border_piece(self.context, 24, row, '│');
         }
@@ -66,7 +65,8 @@ impl<'a> HudSystem<'a> {
                 space_length = 0;
             }
 
-            self.context.print(current_x + space_length, current_y, token);
+            self.context
+                .print(current_x + space_length, current_y, token);
             current_x += text_length + space_length;
         }
     }
@@ -81,35 +81,63 @@ impl<'a> HudSystem<'a> {
         }
     }
 
-    fn print_glyph_descriptions(&mut self, renderables: &ReadStorage<'a, Renderable>, descriptions: &ReadStorage<'a, Description>) {
+    fn print_glyph_descriptions(
+        &mut self,
+        renderables: &ReadStorage<'a, Renderable>,
+        descriptions: &ReadStorage<'a, Description>,
+    ) {
         let start_x = 25;
         let start_y = 0;
         let mut current_y = start_y;
 
         for (renderable, description) in (renderables, descriptions).join() {
-            self.context.set(start_x, current_y, renderable.color, rltk::RGB::named(rltk::BLACK), renderable.glyph);
-            self.context.print(start_x+2, current_y, description.name.as_str());
+            self.context.set(
+                start_x,
+                current_y,
+                renderable.color,
+                rltk::RGB::named(rltk::BLACK),
+                renderable.glyph,
+            );
+            self.context
+                .print(start_x + 2, current_y, description.name.as_str());
             current_y += 1;
         }
     }
 }
 
 fn draw_border_piece(context: &mut rltk::Rltk, x: i32, y: i32, glyph: char) {
-    context.set(x, y, rltk::RGB::named(rltk::WHITE), rltk::RGB::named(rltk::BLACK), rltk::to_cp437(glyph));
+    context.set(
+        x,
+        y,
+        rltk::RGB::named(rltk::WHITE),
+        rltk::RGB::named(rltk::BLACK),
+        rltk::to_cp437(glyph),
+    );
 }
 
 impl<'a> System<'a> for HudSystem<'a> {
     type SystemData = (
-        ReadStorage<'a, Player>, 
-        ReadStorage<'a, PlayerTextInputComponent>, 
-        ReadStorage<'a, ActiveDescriptionComponent>, 
+        ReadStorage<'a, Player>,
+        ReadStorage<'a, PlayerTextInputComponent>,
+        ReadStorage<'a, ActiveDescriptionComponent>,
         ReadExpect<'a, Vec<RoomData>>,
         ReadStorage<'a, CombatLog>,
         ReadStorage<'a, Renderable>,
         ReadStorage<'a, Description>,
     );
 
-    fn run(&mut self, (_players, player_text_inputs, active_descriptions, room_datas, combat_logs, renderables, descriptions): Self::SystemData) {
+    fn run(
+        &mut self,
+        (
+            _players,
+            player_text_inputs,
+            active_descriptions,
+            room_datas,
+            combat_logs,
+            renderables,
+            descriptions,
+        ): Self::SystemData,
+    ) {
         self.draw_map_border();
 
         let room_data = &room_datas[self.room as usize];
@@ -149,14 +177,16 @@ impl<'a> DebugHudSystem<'a> {
 }
 
 impl<'a> System<'a> for DebugHudSystem<'_> {
-    type SystemData = (ReadStorage<'a, Player>, ReadStorage<'a, DebugHudComponent>, ReadExpect<'a, Vec<RoomData>>);
+    type SystemData = (
+        ReadStorage<'a, Player>,
+        ReadStorage<'a, DebugHudComponent>,
+        ReadExpect<'a, Vec<RoomData>>,
+    );
 
     fn run(&mut self, (players, debug_huds, _room_datas): Self::SystemData) {
         // debug
         for (_player, _debug) in (&players, &debug_huds).join() {
             self.context.print(37, 24, self.room.to_string());
-        }        
+        }
     }
 }
-
-    

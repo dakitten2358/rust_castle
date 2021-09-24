@@ -1,9 +1,9 @@
 use bitflags::bitflags;
-use std::fmt;
+use serde::{Deserialize, Serialize};
 use specs::prelude::*;
-use serde::{Serialize, Deserialize};
+use std::fmt;
 
-use crate::components::{Position, Description, PickupTrigger};
+use crate::components::{Description, PickupTrigger, Position};
 
 bitflags! {
     #[derive(Serialize, Deserialize)]
@@ -14,7 +14,7 @@ bitflags! {
         const BOOK          = 1 << 2;       // 2584
         const MAGICWAND     = 1 << 3;       // 2500
         const SWORD         = 1 << 4;       // 253C
-        const KEY           = 1 << 5;       // 03C4 
+        const KEY           = 1 << 5;       // 03C4
         const EYEGLASSES    = 1 << 6;       // 221E
         const HELMET        = 1 << 7;       // 00A2
         const WINEFLASK     = 1 << 8;       // 0021 or 00A1
@@ -100,15 +100,21 @@ pub fn item_to_description(item_type: ItemFlags) -> (&'static str, &'static str)
     }
 }
 
-pub fn create_item_at(world: &mut World, room: i32, item_type: ItemFlags, x: i32, y:i32)
-{
+pub fn create_item_at(world: &mut World, room: i32, item_type: ItemFlags, x: i32, y: i32) {
     match item_type {
         _ => {
             let (name, description) = item_to_description(item_type);
-            world.create_entity()
-                .with(Position{ x: x, y: y})
-                .with(crate::render::Renderable::new_with_z(item_to_glyph(item_type), rltk::WHITE, 1))
-                .with(PickupTrigger{item_to_pickup: item_type})
+            world
+                .create_entity()
+                .with(Position { x: x, y: y })
+                .with(crate::render::Renderable::new_with_z(
+                    item_to_glyph(item_type),
+                    rltk::WHITE,
+                    1,
+                ))
+                .with(PickupTrigger {
+                    item_to_pickup: item_type,
+                })
                 .with(crate::room::BelongsToRoom { room: room })
                 .with(Description::new(name, description))
                 .build();

@@ -1,15 +1,15 @@
+use crate::components::*;
 use rltk::VirtualKeyCode;
 use specs::prelude::*;
-use crate::components::*;
 
 pub struct PlayerInputSystem<'a> {
-    context: &'a rltk::Rltk
+    context: &'a rltk::Rltk,
 }
 
 impl<'a> PlayerInputSystem<'a> {
     pub fn new(with_context: &'a rltk::Rltk) -> Self {
         Self {
-            context: with_context
+            context: with_context,
         }
     }
 
@@ -61,23 +61,28 @@ impl<'a> PlayerInputSystem<'a> {
 }
 
 impl<'a> System<'a> for PlayerInputSystem<'_> {
-    type SystemData = (ReadStorage<'a, PlayerInputMappingComponent>, WriteStorage<'a, PlayerInputComponent>, WriteStorage<'a, PlayerTextInputComponent>);
+    type SystemData = (
+        ReadStorage<'a, PlayerInputMappingComponent>,
+        WriteStorage<'a, PlayerInputComponent>,
+        WriteStorage<'a, PlayerTextInputComponent>,
+    );
 
-    fn run(&mut self, (input_mappings, mut player_inputs, mut player_text_inputs): Self::SystemData) {
+    fn run(
+        &mut self,
+        (input_mappings, mut player_inputs, mut player_text_inputs): Self::SystemData,
+    ) {
         for (input_mapping, player_input) in (&input_mappings, &mut player_inputs).join() {
             player_input.clear();
             match self.context.key {
                 None => {}
-                Some(key) => input_mapping.process_key(key, player_input)
+                Some(key) => input_mapping.process_key(key, player_input),
             }
         }
         for player_text_input in (&mut player_text_inputs).join() {
             match self.context.key {
-                None => {},
-                Some(key) => PlayerInputSystem::process_text_input(player_text_input, key)
+                None => {}
+                Some(key) => PlayerInputSystem::process_text_input(player_text_input, key),
             }
         }
     }
-
-    
 }

@@ -1,9 +1,9 @@
-use rltk::{RGB};
+use rltk::RGB;
+use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use specs_derive::Component;
-use serde::{Serialize, Deserialize};
 
-use crate::components::{Position};
+use crate::components::Position;
 
 #[derive(Component, Serialize, Deserialize)]
 pub struct Renderable {
@@ -29,13 +29,13 @@ impl Renderable {
 }
 
 pub struct RenderSystem<'a> {
-    context: &'a mut rltk::Rltk
+    context: &'a mut rltk::Rltk,
 }
 
 impl<'a> RenderSystem<'a> {
     pub fn new(with_context: &'a mut rltk::Rltk) -> Self {
         Self {
-            context: with_context
+            context: with_context,
         }
     }
 }
@@ -45,13 +45,21 @@ impl<'a> System<'a> for RenderSystem<'_> {
 
     fn run(&mut self, (positions, renderables): Self::SystemData) {
         for zorder in 0..2 {
-            for m in (&positions, &renderables).join().filter(|a| a.1.zorder == zorder) {
+            for m in (&positions, &renderables)
+                .join()
+                .filter(|a| a.1.zorder == zorder)
+            {
                 let position = &m.0;
                 let renderable = &m.1;
 
-                self.context.set(position.x, position.y, renderable.color, rltk::RGB::named(rltk::BLACK), renderable.glyph);
+                self.context.set(
+                    position.x,
+                    position.y,
+                    renderable.color,
+                    rltk::RGB::named(rltk::BLACK),
+                    renderable.glyph,
+                );
             }
         }
-        
     }
 }

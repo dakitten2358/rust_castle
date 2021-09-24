@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use specs_derive::Component;
 use std::cmp::*;
@@ -68,7 +68,10 @@ impl Movement {
     }
 
     pub fn get_movement_input(&self) -> (i32, i32) {
-        (min(1, max(-1, self.cumulative_x_movement)), min(1, max(-1, self.cumulative_y_movement)))       
+        (
+            min(1, max(-1, self.cumulative_x_movement)),
+            min(1, max(-1, self.cumulative_y_movement)),
+        )
     }
 
     pub fn moved(&mut self) {
@@ -91,7 +94,6 @@ impl Movement {
         (self.attempted_x_movement, self.attempted_y_movement)
     }
 }
-
 
 #[derive(Component, Serialize, Deserialize)]
 pub struct ActiveDescriptionComponent {

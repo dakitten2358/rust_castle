@@ -1,8 +1,8 @@
+use crate::items::ItemFlags;
 use rltk::VirtualKeyCode;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use specs_derive::Component;
-use crate::items::ItemFlags;
 
 #[derive(Component, Serialize, Deserialize)]
 pub struct CombatStats {
@@ -17,7 +17,7 @@ pub struct AppliesDamage {
 
 #[derive(Component)]
 pub struct ApplyDamageComponent {
-    pub amounts: Vec::<i32>,
+    pub amounts: Vec<i32>,
     pub instigator: Entity,
 }
 
@@ -65,7 +65,7 @@ impl PlayerInputComponent {
         }
     }
 
-    pub fn clear(&mut self) { 
+    pub fn clear(&mut self) {
         self.move_left = false;
         self.move_right = false;
         self.move_up = false;
@@ -83,7 +83,7 @@ impl PlayerInputMappingComponent {
             VirtualKeyCode::Left => player_input.move_left = true,
             VirtualKeyCode::Right => player_input.move_right = true,
             VirtualKeyCode::Up => player_input.move_up = true,
-            VirtualKeyCode::Down => player_input.move_down = true,            
+            VirtualKeyCode::Down => player_input.move_down = true,
             // Default
             _ => {}
         }
@@ -139,13 +139,11 @@ impl PlayerTextInputComponent {
     pub fn consume(&mut self) -> Option<String> {
         if self.submitted {
             let text = self.input_text.clone();
-        
+
             self.submitted = false;
             self.input_text.clear();
             Some(text)
-        }
-        else
-        {
+        } else {
             None
         }
     }

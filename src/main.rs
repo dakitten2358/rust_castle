@@ -1,22 +1,21 @@
-use rltk::{Rltk, GameState};
+use rltk::{GameState, Rltk};
+use specs::error::NoError;
 use specs::prelude::*;
 use specs::saveload::*;
 use std::fs::File;
-use specs::error::NoError;
 
-mod input;
-mod render;
-mod game;
-mod hud;
-mod room;
 mod ai;
-mod inventory;
-mod items;
 mod combat;
 mod components;
+mod game;
+mod hud;
+mod input;
+mod inventory;
+mod items;
+mod render;
+mod room;
 
 use crate::components::*;
-
 
 macro_rules! serialize_individually {
     ($ecs:expr, $ser:expr, $data:expr, $( $type:ty),*) => {
@@ -39,8 +38,13 @@ pub struct State {
 
 pub enum StateAction {
     None,
-    DeleteEntities {entities: Vec<Entity>},
-    ChangeRoom {direction: room::ExitDirection, to_room: i32},
+    DeleteEntities {
+        entities: Vec<Entity>,
+    },
+    ChangeRoom {
+        direction: room::ExitDirection,
+        to_room: i32,
+    },
     Quit,
 }
 
@@ -58,7 +62,7 @@ impl State {
         let mut apply_player_movement_input = game::ApplyPlayerMovementInputSystem::new();
         apply_player_movement_input.run_now(&self.world);
         if apply_player_movement_input.player_moved {
-            let mut ai = ai::AiMoveToPlayerSystem{};
+            let mut ai = ai::AiMoveToPlayerSystem {};
             ai.run_now(&self.world);
         }
 
@@ -74,10 +78,10 @@ impl State {
         self.handle_state_action(pickups.state_action);
 
         if apply_player_movement_input.player_moved {
-            let mut melee_system = combat::MeleeCombatSystem{};
+            let mut melee_system = combat::MeleeCombatSystem {};
             melee_system.run_now(&self.world);
 
-            let mut damage_system = combat::DamageSystem{};
+            let mut damage_system = combat::DamageSystem {};
             damage_system.run_now(&self.world);
         }
 
@@ -109,12 +113,25 @@ impl State {
         room::change_room(&mut self.world, self.room, old_room);
 
         // adjust player position if needed
-        for (_player, position) in (&self.world.read_storage::<Player>(), &mut self.world.write_storage::<Position>()).join() {
+        for (_player, position) in (
+            &self.world.read_storage::<Player>(),
+            &mut self.world.write_storage::<Position>(),
+        )
+            .join()
+        {
             match direction {
-                room::ExitDirection::North => { position.y = 17; },
-                room::ExitDirection::South => { position.y = 0;},
-                room::ExitDirection::East => { position.x = 0;},
-                room::ExitDirection::West => { position.x = 23; },
+                room::ExitDirection::North => {
+                    position.y = 17;
+                }
+                room::ExitDirection::South => {
+                    position.y = 0;
+                }
+                room::ExitDirection::East => {
+                    position.x = 0;
+                }
+                room::ExitDirection::West => {
+                    position.x = 23;
+                }
                 _ => {}
             }
         }
@@ -124,23 +141,29 @@ impl State {
 
     fn handle_state_action(&mut self, action: StateAction) {
         match action {
-            StateAction::DeleteEntities {entities} => {
+            StateAction::DeleteEntities { entities } => {
                 for entity in entities {
-                    self.world.delete_entity(entity).expect("Failed to delete an entity!");
+                    self.world
+                        .delete_entity(entity)
+                        .expect("Failed to delete an entity!");
                 }
-            },
-            StateAction::ChangeRoom {direction, to_room} => {
+            }
+            StateAction::ChangeRoom { direction, to_room } => {
                 self.change_room(to_room, direction);
             }
             StateAction::Quit => {
                 std::process::exit(0);
             }
-            StateAction::None => {},
+            StateAction::None => {}
         }
     }
 
     fn save_stuff(&mut self) {
-        let data = (self.world.entities(), self.world.read_storage::<SimpleMarker<game::DynamicMarker>>());
+        let data = (
+            self.world.entities(),
+            self.world
+                .read_storage::<SimpleMarker<game::DynamicMarker>>(),
+        );
         let writer = File::create("./savegame.json").unwrap();
         let mut serializer = serde_json::Serializer::new(writer);
         serialize_individually!(self.world, serializer, data, Position, Player);
@@ -155,12 +178,11 @@ impl GameState for State {
 }
 
 fn main() -> rltk::BError {
-    let context = terminal_builder(2)
-        .build()?;
-    
+    let context = terminal_builder(2).build()?;
+
     let mut game_state = State {
         world: World::new(),
-        room: 0
+        room: 0,
     };
 
     register_markers(&mut game_state.world);
@@ -174,14 +196,12 @@ fn main() -> rltk::BError {
     rltk::main_loop(context, game_state)
 }
 
-fn register_markers(world: &mut World)
-{
+fn register_markers(world: &mut World) {
     world.register::<SimpleMarker<game::DynamicMarker>>();
     world.insert(SimpleMarkerAllocator::<game::DynamicMarker>::default());
 }
 
-fn register_components(world: &mut World)
-{
+fn register_components(world: &mut World) {
     world.register::<PlayerInputComponent>();
     world.register::<PlayerTextInputComponent>();
     world.register::<PlayerInputMappingComponent>();
@@ -216,5 +236,5 @@ fn terminal_builder(scale: i32) -> rltk::RltkBuilder {
         .with_font("castle10x10.png", 10, 10)
         .with_simple_console(40, 25, "castle10x10.png")
         .with_title("Castle Adventure!");
-    context       
+    context
 }
