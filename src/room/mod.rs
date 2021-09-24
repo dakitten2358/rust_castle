@@ -8,8 +8,8 @@ use std::fs::File;
 use std::io::Read;
 use std::str;
 
-use crate::components::{ColliderComponent, Description, Position};
-use crate::items::{create_item_at, ItemFlags};
+use crate::components::{ColliderComponent, Position};
+use crate::items::create_item_at;
 use crate::render::Renderable;
 
 pub mod dynamic_rooms;
@@ -102,7 +102,7 @@ impl ExitTrigger {
 
 pub fn change_room(world: &mut World, new_room: i32, old_room: i32) {
     // save dynamics in old room
-    if (old_room > 0) {
+    if old_room >= 0 {
         update_dynamic_room(world, old_room);
     }
 

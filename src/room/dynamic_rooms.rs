@@ -1,6 +1,5 @@
 use crate::components::*;
 use crate::game::DynamicMarker;
-use crate::items::ItemFlags;
 use crate::room::BelongsToRoom;
 use serde::{Deserialize, Serialize};
 use specs::prelude::*;
@@ -127,33 +126,4 @@ fn create_description(world: &mut World, room: i32, word: &str, description: &st
         .with(Description::new(word, description))
         .marked::<SimpleMarker<DynamicMarker>>()
         .build();
-}
-
-fn setup_dynamic_data_example() {
-    let mut rooms = Vec::new();
-
-    let mut room = DynamicRoomData {
-        room: 12,
-        items: Vec::new(),
-        descriptions: Vec::new(),
-    };
-
-    let item1 = DynamicItemData {
-        item: "lamp".to_string(),
-        position: DynamicPosition { x: 4, y: 16 },
-    };
-    let item2 = DynamicItemData {
-        item: "hourglass".to_string(),
-        position: DynamicPosition { x: 5, y: 17 },
-    };
-
-    room.items.push(item1);
-    room.items.push(item2);
-    rooms.push(room);
-
-    let writer = std::fs::File::create("./data/dynrooms.json").unwrap();
-    let mut serializer = serde_json::Serializer::pretty(writer);
-
-    (&rooms).serialize(&mut serializer);
-    //let j = serde_json::to_string_pretty(&rooms);
 }
