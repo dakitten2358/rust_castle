@@ -51,7 +51,7 @@ pub struct State {
     world: World,
     room: i32,
 
-    dynamic_room_data: std::collections::HashMap<i32, Vec<u8>>,    
+    dynamic_room_data: std::collections::HashMap<i32, Vec<u8>>,
 }
 
 pub enum StateAction {
@@ -208,7 +208,7 @@ impl State {
 
         {
             let writer2 = BufWriter::new(Vec::new());
-            let mut serializer2 = serde_json::Serializer::new(writer2);
+            let mut serializer2 = serde_json::Serializer::pretty(writer2);
             serialize_individually!(
                 // ecs
                 self.world,
@@ -225,7 +225,9 @@ impl State {
                 Description
             );
             let bytes = serializer2.into_inner().into_inner().expect("failed to get bytes");
+            /*
             self.dynamic_room_data.insert(self.room, bytes);
+            */
         }
     }
 
@@ -235,9 +237,9 @@ impl State {
 
         {
             let mut d = (&mut self.world.entities(), &mut self.world.write_storage::<SimpleMarker<game::DynamicMarker>>(), &mut self.world.write_resource::<SimpleMarkerAllocator<game::DynamicMarker>>());
-            deserialize_individually!(self.world, deserializer, d, Position, Player, crate::render::Renderable, PickupTrigger, crate::room::BelongsToRoom, Description);
+            deserialize_individually!(self.world, deserializer, d, Player, Position, crate::render::Renderable, PickupTrigger, crate::room::BelongsToRoom, Description);
         }
-
+/*
         {
             let room = self.room;
             let reader2 = BufReader::new(self.dynamic_room_data[&room].as_slice());
@@ -245,6 +247,7 @@ impl State {
             let mut d2 = (&mut self.world.entities(), &mut self.world.write_storage::<SimpleMarker<game::DynamicMarker>>(), &mut self.world.write_resource::<SimpleMarkerAllocator<game::DynamicMarker>>());
             deserialize_individually!(self.world, deserializer2, d2, Position, Player, crate::render::Renderable, PickupTrigger, crate::room::BelongsToRoom, Description);
         }
+        */
     }
 }
 
