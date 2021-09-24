@@ -2,7 +2,7 @@ use bitflags::bitflags;
 use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use specs::saveload::*;
-use std::fmt;
+use std::{fmt, fs::File};
 
 use crate::components::{Description, PickupTrigger, Position};
 use crate::game::DynamicMarker;
@@ -151,4 +151,35 @@ pub fn create_item_at(world: &mut World, room: i32, item_type: ItemFlags, x: i32
                 .build();
         }
     }
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+struct ItemData {
+    pub flag: ItemFlags,
+    pub name: String, 
+    pub description: String,
+}
+
+pub fn load_items(world: &mut World)
+{
+    //save_items();
+
+    let f = File::open("data/items.json").expect("item data not found");
+    let items: Vec<ItemData> =
+        serde_json::from_reader(f).expect("failed to deserializer!");
+
+    world.insert(items);
+}
+
+fn save_items()
+{
+    let mut items = Vec::new();
+
+    let item = ItemData { flag: ItemFlags::LAMP, name: "Lamp".to_string(), description: "It's bright!".to_string()};
+    items.push(item);
+
+    let writer = std::fs::File::create("./data/items.json").unwrap();
+    let mut serializer = serde_json::Serializer::pretty(writer);
+
+    (&items).serialize(&mut serializer);
 }

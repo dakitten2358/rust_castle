@@ -168,15 +168,18 @@ fn main() -> rltk::BError {
         room: 0,
     };
 
+    // register types
     register_markers(&mut game_state.world);
     register_components(&mut game_state.world);
 
-    game::create_player_entity(&mut game_state.world);
-
+    // load raw data
+    items::load_items(&mut game_state.world);
     room::load_rooms(&mut game_state.world);
     room::load_dynamic_rooms(&mut game_state.world);
-    room::change_room(&mut game_state.world, 0, -1);
 
+    // start game
+    game::create_player_entity(&mut game_state.world);
+    room::change_room(&mut game_state.world, 0, -1);
     rltk::main_loop(context, game_state)
 }
 

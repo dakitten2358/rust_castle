@@ -1,0 +1,156 @@
+[
+  {
+    "flag": {
+      "bits": 1
+    },
+    "name": "Lamp",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 2
+    },
+    "name": "Scepter",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 4
+    },
+    "name": "Book",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 8
+    },
+    "name": "Magic Wand",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 16
+    },
+    "name": "Sword",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 32
+    },
+    "name": "Key",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 64
+    },
+    "name": "Eye Glasses",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 128
+    },
+    "name": "Helmet",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 256
+    },
+    "name": "Wine Flask",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 512
+    },
+    "name": "Crystal Ball",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 1024
+    },
+    "name": "Necklace",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 2048
+    },
+    "name": "Holy Cross",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 4096
+    },
+    "name": "Diamond",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 8192
+    },
+    "name": "Silver Bars",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 16384
+    },
+    "name": "Rubies",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 32768
+    },
+    "name": "Jade Figurine",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 65536
+    },
+    "name": "Harp",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 131072
+    },
+    "name": "Hourglass",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 262144
+    },
+    "name": "Large Gem",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 524288
+    },
+    "name": "Gold Bar",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 1048576
+    },
+    "name": "Fancy Goblet",
+    "description": "It's bright!"
+  },
+  {
+    "flag": {
+      "bits": 2097152
+    },
+    "name": "Crown",
+    "description": "It's bright!"
+  }
+]
