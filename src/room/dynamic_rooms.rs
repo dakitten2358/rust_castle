@@ -86,7 +86,7 @@ pub fn update_dynamic_room(world: &mut World, room: i32) {
 
     // save it
     let mut room_datas = world.fetch_mut::<Vec<DynamicRoomData>>();
-    room_datas[room as usize] = room_data.clone();
+    room_datas[room as usize] = room_data;
 }
 
 fn find_room<'a>(room_index: i32, rooms: &'a Vec<DynamicRoomData>) -> Option<&'a DynamicRoomData> {
