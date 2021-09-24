@@ -142,6 +142,7 @@ impl<'a> PlayerInputSystem<'a> {
             VirtualKeyCode::T => player_text_input.add_character('t'),
             VirtualKeyCode::U => player_text_input.add_character('u'),
             VirtualKeyCode::V => player_text_input.add_character('v'),
+            VirtualKeyCode::W => player_text_input.add_character('w'),
             VirtualKeyCode::X => player_text_input.add_character('x'),
             VirtualKeyCode::Y => player_text_input.add_character('y'),
             VirtualKeyCode::Z => player_text_input.add_character('z'),

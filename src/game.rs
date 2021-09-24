@@ -3,6 +3,8 @@ use specs_derive::Component;
 use std::cmp::*;
 use std::str::FromStr;
 
+use itertools::Itertools;
+
 use crate::input::{PlayerInputMappingComponent, PlayerInputComponent, PlayerTextInputComponent};
 use crate::render::{Renderable};
 use crate::StateAction;
@@ -40,6 +42,14 @@ impl Description {
     pub fn new(name: &str, description: &str) -> Self {
         Self {
             input_name: name.to_ascii_lowercase(),
+            name: name.to_string(),
+            description: description.to_string(),
+        }
+    }
+
+    pub fn new_explicit(input_name: &str, name: &str, description: &str) -> Self {
+        Self {
+            input_name: input_name.to_ascii_lowercase(),
             name: name.to_string(),
             description: description.to_string(),
         }
@@ -247,12 +257,17 @@ pub struct PlayerTextCommandSystem {}
 impl PlayerTextCommandSystem {
     fn process_text_input<'a>(&self, text_command: String, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
         let mut tokens = text_command.split_whitespace();
-        match tokens.next()
+        let first_token = tokens.next();
+        let args_string = tokens.format(" ").to_string();
+        let args = args_string.as_str();
+        match first_token
         {
             Some(token) => {
                 match token {
-                    "look" => self.process_look(tokens.next(), descriptions),
-                    "use" => self.process_use(tokens.next()),
+                    "look" => {
+                        self.process_look(args, descriptions)
+                    },
+                    "use" => self.process_use(args),
                     _ => None
                 }
             },
@@ -260,16 +275,21 @@ impl PlayerTextCommandSystem {
         }
     }
 
-    fn process_look<'a>(&self, look_at_target_name: Option<&str>, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
+    fn process_look<'a>(&self, look_at_target_name: &str, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
         match look_at_target_name {
-            Some(target_name) => self.process_look_target(target_name, descriptions),
-            None => self.process_look_room(),
+            target_name if target_name.len() > 0 => {
+                self.process_look_target(target_name, descriptions)
+            },
+            _ => self.process_look_room(),
         }
     }
 
     fn process_look_target<'a>(&self, _target_name: &str, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
         for description in (descriptions).join() {
             if description.input_name == _target_name {
+                return Some(description.description.clone());
+            }
+            if description.name.to_ascii_lowercase() == _target_name {
                 return Some(description.description.clone());
             }
         }
@@ -280,7 +300,7 @@ impl PlayerTextCommandSystem {
         return Some("look at room with long description here".to_string());
     }
 
-    fn process_use(&self, _use_target_name: Option<&str>) -> Option<String> {
+    fn process_use(&self, _use_target_name: &str) -> Option<String> {
         return Some("use item".to_string());
     }
 }
