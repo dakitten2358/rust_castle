@@ -3,6 +3,7 @@ use specs::error::NoError;
 use specs::prelude::*;
 use specs::saveload::*;
 use std::fs::File;
+use std::io::{BufWriter, BufReader};
 
 mod ai;
 mod combat;
@@ -49,6 +50,8 @@ macro_rules! deserialize_individually {
 pub struct State {
     world: World,
     room: i32,
+
+    dynamic_room_data: std::collections::HashMap<i32, Vec<u8>>,    
 }
 
 pub enum StateAction {
@@ -202,6 +205,28 @@ impl State {
             crate::room::BelongsToRoom,
             Description
         );
+
+        {
+            let writer2 = BufWriter::new(Vec::new());
+            let mut serializer2 = serde_json::Serializer::new(writer2);
+            serialize_individually!(
+                // ecs
+                self.world,
+                // where
+                serializer2,
+                // what
+                data,
+                // data to serialize
+                Position,
+                Player,
+                crate::render::Renderable,
+                PickupTrigger,
+                crate::room::BelongsToRoom,
+                Description
+            );
+            let bytes = serializer2.into_inner().into_inner().expect("failed to get bytes");
+            self.dynamic_room_data.insert(self.room, bytes);
+        }
     }
 
     fn debug_load(&mut self) {
@@ -211,6 +236,14 @@ impl State {
         {
             let mut d = (&mut self.world.entities(), &mut self.world.write_storage::<SimpleMarker<game::DynamicMarker>>(), &mut self.world.write_resource::<SimpleMarkerAllocator<game::DynamicMarker>>());
             deserialize_individually!(self.world, deserializer, d, Position, Player, crate::render::Renderable, PickupTrigger, crate::room::BelongsToRoom, Description);
+        }
+
+        {
+            let room = self.room;
+            let reader2 = BufReader::new(self.dynamic_room_data[&room].as_slice());
+            let mut deserializer2 = serde_json::Deserializer::from_reader(reader2);
+            let mut d2 = (&mut self.world.entities(), &mut self.world.write_storage::<SimpleMarker<game::DynamicMarker>>(), &mut self.world.write_resource::<SimpleMarkerAllocator<game::DynamicMarker>>());
+            deserialize_individually!(self.world, deserializer2, d2, Position, Player, crate::render::Renderable, PickupTrigger, crate::room::BelongsToRoom, Description);
         }
     }
 }
@@ -228,6 +261,7 @@ fn main() -> rltk::BError {
     let mut game_state = State {
         world: World::new(),
         room: 0,
+        dynamic_room_data: std::collections::HashMap::new(),
     };
 
     register_markers(&mut game_state.world);
