@@ -3,7 +3,7 @@ use specs::error::NoError;
 use specs::prelude::*;
 use specs::saveload::*;
 use std::fs::File;
-use std::io::{BufWriter, BufReader};
+use std::io::{BufReader, BufWriter};
 
 mod ai;
 mod combat;
@@ -224,7 +224,10 @@ impl State {
                 crate::room::BelongsToRoom,
                 Description
             );
-            let bytes = serializer2.into_inner().into_inner().expect("failed to get bytes");
+            let bytes = serializer2
+                .into_inner()
+                .into_inner()
+                .expect("failed to get bytes");
             /*
             self.dynamic_room_data.insert(self.room, bytes);
             */
@@ -236,10 +239,28 @@ impl State {
         let mut deserializer = serde_json::Deserializer::from_str(&data);
 
         {
-            let mut d = (&mut self.world.entities(), &mut self.world.write_storage::<SimpleMarker<game::DynamicMarker>>(), &mut self.world.write_resource::<SimpleMarkerAllocator<game::DynamicMarker>>());
-            deserialize_individually!(self.world, deserializer, d, Player, Position, crate::render::Renderable, PickupTrigger, crate::room::BelongsToRoom, Description);
+            let mut d = (
+                &mut self.world.entities(),
+                &mut self
+                    .world
+                    .write_storage::<SimpleMarker<game::DynamicMarker>>(),
+                &mut self
+                    .world
+                    .write_resource::<SimpleMarkerAllocator<game::DynamicMarker>>(),
+            );
+            deserialize_individually!(
+                self.world,
+                deserializer,
+                d,
+                Player,
+                Position,
+                crate::render::Renderable,
+                PickupTrigger,
+                crate::room::BelongsToRoom,
+                Description
+            );
         }
-/*
+        /*
         {
             let room = self.room;
             let reader2 = BufReader::new(self.dynamic_room_data[&room].as_slice());

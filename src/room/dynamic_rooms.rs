@@ -1,11 +1,11 @@
-use specs::prelude::*;
-use serde::{Deserialize, Serialize};
-use crate::items::ItemFlags;
-use std::fs::File;
 use crate::components::*;
-use crate::room::BelongsToRoom;
-use specs::saveload::*;
 use crate::game::DynamicMarker;
+use crate::items::ItemFlags;
+use crate::room::BelongsToRoom;
+use serde::{Deserialize, Serialize};
+use specs::prelude::*;
+use specs::saveload::*;
+use std::fs::File;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DynamicPosition {
@@ -44,10 +44,11 @@ impl DynamicRoomData {
 
 pub fn load_dynamic_rooms(world: &mut World) {
     //setup_dynamic_data_example();
-    
+
     let f = File::open("data/dynrooms.json").expect("data not found");
-    let loaded_rooms: Vec<DynamicRoomData> = serde_json::from_reader(f).expect("failed to deserializer!");
-    
+    let loaded_rooms: Vec<DynamicRoomData> =
+        serde_json::from_reader(f).expect("failed to deserializer!");
+
     let mut rooms = Vec::new();
     for room in 0..83 {
         match find_room(room, &loaded_rooms) {
@@ -86,7 +87,6 @@ pub fn create_dynamic_room_entities(world: &mut World, room: i32) {
         let keyword = desc.keyword.as_str();
         let description = desc.text.as_str();
         create_description(world, room, keyword, description)
-
     }
 }
 
@@ -102,7 +102,7 @@ fn create_description(world: &mut World, room: i32, word: &str, description: &st
 fn setup_dynamic_data_example() {
     let mut rooms = Vec::new();
 
-    let mut room = DynamicRoomData { 
+    let mut room = DynamicRoomData {
         room: 12,
         items: Vec::new(),
         descriptions: Vec::new(),
@@ -126,5 +126,4 @@ fn setup_dynamic_data_example() {
 
     (&rooms).serialize(&mut serializer);
     //let j = serde_json::to_string_pretty(&rooms);
-    
 }

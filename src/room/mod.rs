@@ -80,7 +80,6 @@ impl RoomData {
     }
 }
 
-
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct BelongsToRoom {
     pub room: i32,
