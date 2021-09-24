@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
+use specs::error::NoError;
 use specs::prelude::*;
-use specs_derive::Component;
+use specs::saveload::{ConvertSaveload, Marker};
+use specs_derive::{Component, ConvertSaveload};
 use std::cmp::*;
 use std::str::FromStr;
 
@@ -10,7 +12,7 @@ mod game;
 pub use crate::components::common::*;
 pub use crate::components::game::*;
 
-#[derive(Component, Serialize, Deserialize)]
+#[derive(Component, ConvertSaveload, Clone)]
 pub struct Description {
     pub input_name: String,
     pub name: String,

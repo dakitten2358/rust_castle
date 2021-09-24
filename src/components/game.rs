@@ -1,8 +1,10 @@
 use crate::items::ItemFlags;
 use rltk::VirtualKeyCode;
 use serde::{Deserialize, Serialize};
+use specs::error::NoError;
 use specs::prelude::*;
-use specs_derive::Component;
+use specs::saveload::{ConvertSaveload, Marker};
+use specs_derive::{Component, ConvertSaveload};
 
 #[derive(Component, Serialize, Deserialize)]
 pub struct CombatStats {
@@ -149,12 +151,12 @@ impl PlayerTextInputComponent {
     }
 }
 
-#[derive(Component, Debug)]
+#[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct PickupTrigger {
     pub item_to_pickup: ItemFlags,
 }
 
-#[derive(Component, Serialize, Deserialize)]
+#[derive(Component, ConvertSaveload)]
 pub struct InventoryComponent {
     items: ItemFlags,
 }

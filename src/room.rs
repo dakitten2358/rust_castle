@@ -1,6 +1,9 @@
 use regex::Regex;
+use serde::{Deserialize, Serialize};
+use specs::error::NoError;
 use specs::prelude::*;
-use specs_derive::Component;
+use specs::saveload::{ConvertSaveload, Marker};
+use specs_derive::{Component, ConvertSaveload};
 use std::fs::File;
 use std::io::Read;
 use std::str;
@@ -74,7 +77,7 @@ impl RoomData {
     }
 }
 
-#[derive(Component)]
+#[derive(Component, ConvertSaveload, Clone)]
 pub struct BelongsToRoom {
     pub room: i32,
 }

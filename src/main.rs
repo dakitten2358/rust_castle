@@ -31,6 +31,21 @@ macro_rules! serialize_individually {
     };
 }
 
+macro_rules! deserialize_individually {
+    ($ecs:expr, $de:expr, $data:expr, $( $type:ty),*) => {
+        $(
+        DeserializeComponents::<NoError, _>::deserialize(
+            &mut ( &mut $ecs.write_storage::<$type>(), ),
+            &mut $data.0, // entities
+            &mut $data.1, // marker
+            &mut $data.2, // allocater
+            &mut $de,
+        )
+        .unwrap();
+        )*
+    };
+}
+
 pub struct State {
     world: World,
     room: i32,
@@ -46,6 +61,8 @@ pub enum StateAction {
         to_room: i32,
     },
     Quit,
+    DebugSave,
+    DebugLoad,
 }
 
 impl State {
@@ -135,8 +152,6 @@ impl State {
                 _ => {}
             }
         }
-
-        self.save_stuff();
     }
 
     fn handle_state_action(&mut self, action: StateAction) {
@@ -154,11 +169,17 @@ impl State {
             StateAction::Quit => {
                 std::process::exit(0);
             }
+            StateAction::DebugSave => {
+                self.debug_save();
+            }
+            StateAction::DebugLoad => {
+                self.debug_load();
+            }
             StateAction::None => {}
         }
     }
 
-    fn save_stuff(&mut self) {
+    fn debug_save(&mut self) {
         let data = (
             self.world.entities(),
             self.world
@@ -166,7 +187,31 @@ impl State {
         );
         let writer = File::create("./savegame.json").unwrap();
         let mut serializer = serde_json::Serializer::new(writer);
-        serialize_individually!(self.world, serializer, data, Position, Player);
+        serialize_individually!(
+            // ecs
+            self.world,
+            // where
+            serializer,
+            // what
+            data,
+            // data to serialize
+            Position,
+            Player,
+            crate::render::Renderable,
+            PickupTrigger,
+            crate::room::BelongsToRoom,
+            Description
+        );
+    }
+
+    fn debug_load(&mut self) {
+        let data = std::fs::read_to_string("./savegame.json").unwrap();
+        let mut deserializer = serde_json::Deserializer::from_str(&data);
+
+        {
+            let mut d = (&mut self.world.entities(), &mut self.world.write_storage::<SimpleMarker<game::DynamicMarker>>(), &mut self.world.write_resource::<SimpleMarkerAllocator<game::DynamicMarker>>());
+            deserialize_individually!(self.world, deserializer, d, Position, Player, crate::render::Renderable, PickupTrigger, crate::room::BelongsToRoom, Description);
+        }
     }
 }
 

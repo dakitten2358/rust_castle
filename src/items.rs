@@ -1,9 +1,11 @@
 use bitflags::bitflags;
 use serde::{Deserialize, Serialize};
 use specs::prelude::*;
+use specs::saveload::*;
 use std::fmt;
 
 use crate::components::{Description, PickupTrigger, Position};
+use crate::game::DynamicMarker;
 
 bitflags! {
     #[derive(Serialize, Deserialize)]
@@ -117,6 +119,7 @@ pub fn create_item_at(world: &mut World, room: i32, item_type: ItemFlags, x: i32
                 })
                 .with(crate::room::BelongsToRoom { room: room })
                 .with(Description::new(name, description))
+                .marked::<SimpleMarker<DynamicMarker>>()
                 .build();
         }
     }

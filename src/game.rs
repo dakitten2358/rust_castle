@@ -1,5 +1,4 @@
 use specs::prelude::*;
-use specs::saveload::*;
 
 use crate::components::*;
 use crate::render::Renderable;
@@ -30,7 +29,6 @@ pub fn create_player_entity(world: &mut World) {
         })
         .with(CombatLog::new())
         .with(DebugHudComponent {})
-        .marked::<SimpleMarker<DynamicMarker>>()
         .build();
 }
 
@@ -227,6 +225,8 @@ impl PlayerTextCommandSystem {
         match tokens.next() {
             Some(token) => match token {
                 "go" => self.process_debug_go(tokens.next()),
+                "dsave" => self.state_action = StateAction::DebugSave,
+                "dload" => self.state_action = StateAction::DebugLoad,
                 _ => {}
             },
             None => {}
