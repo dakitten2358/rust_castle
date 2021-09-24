@@ -169,68 +169,60 @@ pub fn create_room_entities(world: &mut World, room: i32, room_data: &RoomData) 
 
     // find any open edges, and create some entities with just the trigger on them
     for row in 0..18 {
-        if !is_tile_at(0, row, &room_data.tiles) {
-            match find_exit_data(ExitDirection::West, &room_data.exits) {
-                Some(exit_data) => {
-                    create_edge_exit_entity(
-                        world,
-                        room,
-                        -1,
-                        row,
-                        exit_data.direction,
-                        exit_data.to_room,
-                    );
-                }
-                _ => {}
+        match find_exit_data(ExitDirection::West, &room_data.exits) {
+            Some(exit_data) => {
+                create_edge_exit_entity(
+                    world,
+                    room,
+                    -1,
+                    row,
+                    exit_data.direction,
+                    exit_data.to_room,
+                );
             }
+            _ => {}
         }
-        if !is_tile_at(23, row, &room_data.tiles) {
-            match find_exit_data(ExitDirection::East, &room_data.exits) {
-                Some(exit_data) => {
-                    create_edge_exit_entity(
-                        world,
-                        room,
-                        24,
-                        row,
-                        exit_data.direction,
-                        exit_data.to_room,
-                    );
-                }
-                _ => {}
+        match find_exit_data(ExitDirection::East, &room_data.exits) {
+            Some(exit_data) => {
+                create_edge_exit_entity(
+                    world,
+                    room,
+                    24,
+                    row,
+                    exit_data.direction,
+                    exit_data.to_room,
+                );
             }
+            _ => {}
         }
     }
 
     for col in 1..23 {
-        if !is_tile_at(col, 0, &room_data.tiles) {
-            match find_exit_data(ExitDirection::North, &room_data.exits) {
-                Some(exit_data) => {
-                    create_edge_exit_entity(
-                        world,
-                        room,
-                        col,
-                        -1,
-                        exit_data.direction,
-                        exit_data.to_room,
-                    );
-                }
-                _ => {}
+        match find_exit_data(ExitDirection::North, &room_data.exits) {
+            Some(exit_data) => {
+                create_edge_exit_entity(
+                    world,
+                    room,
+                    col,
+                    -1,
+                    exit_data.direction,
+                    exit_data.to_room,
+                );
             }
+            _ => {}
         }
-        if !is_tile_at(col, 17, &room_data.tiles) {
-            match find_exit_data(ExitDirection::South, &room_data.exits) {
-                Some(exit_data) => {
-                    create_edge_exit_entity(
-                        world,
-                        room,
-                        col,
-                        18,
-                        exit_data.direction,
-                        exit_data.to_room,
-                    );
-                }
-                _ => {}
+        match find_exit_data(ExitDirection::South, &room_data.exits) {
+            Some(exit_data) => {
+                create_edge_exit_entity(
+                    world,
+                    room,
+                    col,
+                    18,
+                    exit_data.direction,
+                    exit_data.to_room,
+                );
             }
+            _ => {}
         }
     }
 }
@@ -250,15 +242,6 @@ fn create_edge_exit_entity(
         .with(BelongsToRoom { room: room })
         //.with(Renderable::new('x', rltk::YELLOW))
         .build();
-}
-
-fn is_tile_at(x: i32, y: i32, tiles: &Vec<TileData>) -> bool {
-    for &tile_data in tiles {
-        if tile_data.x == x && tile_data.y == y {
-            return true;
-        }
-    }
-    false
 }
 
 fn exit_data_for_tile(room_data: &RoomData, tile: &TileData) -> Option<ExitData> {
