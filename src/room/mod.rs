@@ -101,6 +101,11 @@ impl ExitTrigger {
 }
 
 pub fn change_room(world: &mut World, new_room: i32, old_room: i32) {
+    // save dynamics in old room
+    if (old_room > 0) {
+        update_dynamic_room(world, old_room);
+    }
+
     // remove the old room
     let old_entities = find_entities_to_remove(world, old_room);
     for old_entity in old_entities {

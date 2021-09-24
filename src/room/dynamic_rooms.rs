@@ -60,6 +60,36 @@ pub fn load_dynamic_rooms(world: &mut World) {
     world.insert(rooms);
 }
 
+pub fn update_dynamic_room(world: &mut World, room: i32) {
+    let mut room_data = DynamicRoomData::empty(room);
+
+    let room_ownership = world.read_storage::<BelongsToRoom>();
+    let positions = world.read_storage::<Position>();
+    let marked = world.read_storage::<SimpleMarker<DynamicMarker>>();
+    let items = world.read_storage::<PickupTrigger>();
+
+    for (pickup, pos, _mark, _room) in (&items, &positions, &marked, &room_ownership).join() {
+        let i = DynamicItemData {
+            item: pickup.item_to_pickup.to_string(),
+            position: DynamicPosition { x: pos.x, y: pos.y },
+        };
+        room_data.items.push(i);
+    }
+
+    let descriptions = world.read_storage::<Description>();
+    for (desc, _mark, _room) in (&descriptions, &marked, &room_ownership).join() {
+        let d = DynamicDescriptionData {
+            keyword: desc.input_name.clone(),
+            text: desc.description.clone(),
+        };
+        room_data.descriptions.push(d);
+    }
+
+    // save it
+    let mut room_datas = world.fetch_mut::<Vec<DynamicRoomData>>();
+    room_datas[room as usize] = room_data.clone();
+}
+
 fn find_room<'a>(room_index: i32, rooms: &'a Vec<DynamicRoomData>) -> Option<&'a DynamicRoomData> {
     for room in rooms {
         if room.room == room_index {
