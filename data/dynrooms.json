@@ -13,7 +13,7 @@
     "room": 7,
     "items": [
       {
-        "item": "fancygoblet",
+        "item": "goblet",
         "position": {
           "x": 5,
           "y": 13
@@ -91,7 +91,7 @@
     "room": 23,
     "items": [
       {
-        "item": "magicwand",
+        "item": "wand",
         "position": {
           "x": 3,
           "y": 8
@@ -104,7 +104,7 @@
     "room": 25,
     "items": [
       {
-        "item": "silverbars",
+        "item": "silver",
         "position": {
           "x": 6,
           "y": 7
@@ -117,7 +117,7 @@
     "room": 28,
     "items": [
       {
-        "item": "jadefigurine",
+        "item": "figurine",
         "position": {
           "x": 12,
           "y": 9
@@ -130,7 +130,7 @@
     "room": 36,
     "items": [
       {
-        "item": "holycross",
+        "item": "cross",
         "position": {
           "x": 14,
           "y": 12
@@ -182,7 +182,7 @@
     "room": 65,
     "items": [
       {
-        "item": "crystalball",
+        "item": "crystal",
         "position": {
           "x": 9,
           "y": 12
@@ -195,7 +195,7 @@
     "room": 73,
     "items": [
       {
-        "item": "goldbar",
+        "item": "gold",
         "position": {
           "x": 22,
           "y": 13

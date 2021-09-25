@@ -9,7 +9,6 @@ use std::io::Read;
 use std::str;
 
 use crate::components::{ColliderComponent, Position};
-use crate::items::create_item_at;
 use crate::render::Renderable;
 
 pub mod dynamic_rooms;

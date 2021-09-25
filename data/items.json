@@ -25,6 +25,7 @@
       "bits": 8
     },
     "name": "Magic Wand",
+    "input_name": "wand",
     "description": "It's bright!"
   },
   {
@@ -46,6 +47,7 @@
       "bits": 64
     },
     "name": "Eye Glasses",
+    "input_name": "glasses",
     "description": "It's bright!"
   },
   {
@@ -60,6 +62,7 @@
       "bits": 256
     },
     "name": "Wine Flask",
+    "input_name": "flask",
     "description": "It's bright!"
   },
   {
@@ -67,6 +70,7 @@
       "bits": 512
     },
     "name": "Crystal Ball",
+    "input_name": "crystal",
     "description": "It's bright!"
   },
   {
@@ -81,6 +85,7 @@
       "bits": 2048
     },
     "name": "Holy Cross",
+    "input_name": "cross",
     "description": "It's bright!"
   },
   {
@@ -95,6 +100,7 @@
       "bits": 8192
     },
     "name": "Silver Bars",
+    "input_name": "silver",
     "description": "It's bright!"
   },
   {
@@ -109,6 +115,7 @@
       "bits": 32768
     },
     "name": "Jade Figurine",
+    "input_name": "figurine",
     "description": "It's bright!"
   },
   {
@@ -130,6 +137,7 @@
       "bits": 262144
     },
     "name": "Large Gem",
+    "input_name": "gem",
     "description": "It's bright!"
   },
   {
@@ -137,6 +145,7 @@
       "bits": 524288
     },
     "name": "Gold Bar",
+    "input_name": "gold",
     "description": "It's bright!"
   },
   {
@@ -144,6 +153,7 @@
       "bits": 1048576
     },
     "name": "Fancy Goblet",
+    "input_name": "goblet",
     "description": "It's bright!"
   },
   {

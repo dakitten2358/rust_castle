@@ -36,7 +36,7 @@ bitflags! {
         const ANYTHING      = 0b1111111111111111111111111111111;
     }
 }
-
+/*
 impl fmt::Display for ItemFlags {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
@@ -66,7 +66,7 @@ impl fmt::Display for ItemFlags {
         }
     }
 }
-
+*/
 fn item_to_glyph(item_type: ItemFlags) -> char {
     match item_type {
         ItemFlags::LAMP => '\u{2660}',
@@ -95,81 +95,67 @@ fn item_to_glyph(item_type: ItemFlags) -> char {
     }
 }
 
-pub fn name_to_item(item_name: &str) -> ItemFlags {
-    match item_name.to_ascii_lowercase().as_str() {
-        "lamp" => ItemFlags::LAMP,
-        "scepter" => ItemFlags::SCEPTER,
-        "book" => ItemFlags::BOOK,
-        "magicwand" => ItemFlags::MAGICWAND,
-        "sword" => ItemFlags::SWORD,
-        "key" => ItemFlags::KEY,
-        "eyeglasses" => ItemFlags::EYEGLASSES,
-        "helmet" => ItemFlags::HELMET,
-        "wineflask" => ItemFlags::WINEFLASK,
-        "crystalball" => ItemFlags::CRYSTALBALL,
-        "necklace" => ItemFlags::NECKLACE,
-        "holycross" => ItemFlags::HOLYCROSS,
-        "diamond" => ItemFlags::DIAMOND,
-        "silverbars" => ItemFlags::SILVERBARS,
-        "rubies" => ItemFlags::RUBIES,
-        "jadefigurine" => ItemFlags::JADEFIGURINE,
-        "harp" => ItemFlags::HARP,
-        "hourglass" => ItemFlags::HOURGLASS,
-        "largegem" => ItemFlags::LARGEGEM,
-        "goldbar" => ItemFlags::GOLDBAR,
-        "fancygoblet" => ItemFlags::FANCYGOBLET,
-        "crown" => ItemFlags::CROWN,
-        _ => ItemFlags::EMPTY,
-    }
+pub fn create_item(world: &mut World, room: i32, item_type: ItemFlags, x: i32, y: i32) {
+    let item = find_item(item_type, &world.fetch::<Vec<ItemData>>()).expect("failed to find item").clone();
+    spawn_item(world, room, &item, x, y);
 }
 
-pub fn item_to_description(item_type: ItemFlags) -> (&'static str, &'static str, Option<&'static str>) {
-    match item_type {
-        ItemFlags::LAMP => ("Lamp", "The lamp is magically lit!", None),
-        ItemFlags::SCEPTER => ("Scepter", "A firey ruby sits atop this powerful scepter", None),
-        ItemFlags::BOOK => ("Book", "The words are too blurry", None),
-        ItemFlags::MAGICWAND => ("Magic Wand", "A magical silver wand!", Some("wand")),
-        ItemFlags::SWORD => ("Sword", "", None),
-        ItemFlags::KEY => ("Key", "", None),
-        ItemFlags::EYEGLASSES => ("Eye Glasses", "", Some("glasses")),
-        ItemFlags::HELMET => ("Helmet", "", None),
-        ItemFlags::WINEFLASK => ("Wine Flask", "", Some("flask")),
-        ItemFlags::CRYSTALBALL => ("Crystal Ball", "", None),
-        ItemFlags::NECKLACE => ("Necklace", "", None),
-        ItemFlags::HOLYCROSS => ("Holy Cross", "", Some("cross")),
-        ItemFlags::DIAMOND => ("Diamond", "", None),
-        ItemFlags::SILVERBARS => ("Silver Bars", "shiny!", Some("silver")),
-        ItemFlags::RUBIES => ("Rubies", "", None),
-        ItemFlags::JADEFIGURINE => ("Jade Figurine", "", Some("figurine")),
-        ItemFlags::HARP => ("Harp", "", None),
-        ItemFlags::HOURGLASS => ("Hourglass", "", None),
-        ItemFlags::LARGEGEM => ("Large Gem", "", Some("gem")),
-        ItemFlags::GOLDBAR => ("Gold bar", "", Some("gold")),
-        ItemFlags::FANCYGOBLET => ("Fancy Goblet", "", Some("goblet")),
-        ItemFlags::CROWN => ("Crown", "", None),
-        _ => ("", "", None),
-    }
+pub fn create_item_by_name(world: &mut World, room: i32, item_name: &str, x: i32, y: i32) {
+    let item = find_item_by_name(item_name, &world.fetch::<Vec<ItemData>>()).expect("failed to find item").clone();
+    spawn_item(world, room, &item, x, y);
 }
 
-pub fn create_item_at(world: &mut World, room: i32, item_type: ItemFlags, x: i32, y: i32) {
-    match item_type {
+fn spawn_item(world: &mut World, room: i32, item: &ItemData, x: i32, y: i32) {
+    match item.flag {
         _ => {
-            let (name, description, input_name) = item_to_description(item_type);
             world.create_entity()
                 .with(Position{ x: x, y: y})
-                .with(crate::render::Renderable::new_with_z(item_to_glyph(item_type), rltk::WHITE, 1))
-                .with(PickupTrigger{item_to_pickup: item_type})
+                .with(crate::render::Renderable::new_with_z(item_to_glyph(item.flag), rltk::WHITE, 1))
+                .with(PickupTrigger{item_to_pickup: item.flag})
                 .with(crate::room::BelongsToRoom { room: room })
-                .with(if let Some(explicit_name) = input_name { Description::new_explicit(explicit_name, name, description)} else { Description::new(name, description) })
+                .with(if let Some(explicit_name) = &item.input_name { Description::new_explicit(&explicit_name, &item.name, &item.description)} else { Description::new(&item.name, &item.description) })
                 .build();
         }
     }
+}
+
+pub fn get_item_name(item_to_find: ItemFlags, world: &World) -> String {
+    let items = world.fetch::<Vec<ItemData>>();
+    let item = find_item(item_to_find, &items).expect("failed to find item");
+    if let Some(input_name) = &item.input_name {
+        return input_name.clone();
+    }
+    return item.name.clone();
+}
+
+fn find_item<'a>(item_to_find: ItemFlags, items: &'a Vec<ItemData>) -> Option<&'a ItemData> {
+    for item in items {
+        if item.flag == item_to_find {
+            return Some(item);
+        }
+    }
+    return None;
+}
+
+fn find_item_by_name<'a>(item_to_find: &str, items: &'a Vec<ItemData>) -> Option<&'a ItemData> {
+    for item in items {
+        if let Some(input_name) = &item.input_name {
+            if input_name == item_to_find {
+                return Some(item);
+            }
+        }
+        if item.name.to_ascii_lowercase() == item_to_find {
+            return Some(item);
+        }
+    }
+    return None;
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 struct ItemData {
     pub flag: ItemFlags,
     pub name: String, 
+    pub input_name: Option<String>,
     pub description: String,
 }
 
@@ -188,7 +174,7 @@ fn save_items()
 {
     let mut items = Vec::new();
 
-    let item = ItemData { flag: ItemFlags::LAMP, name: "Lamp".to_string(), description: "It's bright!".to_string()};
+    let item = ItemData { flag: ItemFlags::LAMP, name: "Lamp".to_string(), input_name: Some("lamp".to_string()), description: "It's bright!".to_string()};
     items.push(item);
 
     let writer = std::fs::File::create("./data/items.json").unwrap();

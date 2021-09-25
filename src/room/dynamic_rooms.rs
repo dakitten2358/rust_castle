@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use specs::saveload::*;
 use std::fs::File;
+use crate::items::{get_item_name};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DynamicPosition {
@@ -65,11 +66,11 @@ pub fn update_dynamic_room(world: &mut World, room: i32) {
     let room_ownership = world.read_storage::<BelongsToRoom>();
     let positions = world.read_storage::<Position>();
     let marked = world.read_storage::<SimpleMarker<DynamicMarker>>();
-    let items = world.read_storage::<PickupTrigger>();
+    let pickups = world.read_storage::<PickupTrigger>();
 
-    for (pickup, pos, _mark, _room) in (&items, &positions, &marked, &room_ownership).join() {
+    for (pickup, pos, _mark, _room) in (&pickups, &positions, &marked, &room_ownership).join() {
         let i = DynamicItemData {
-            item: pickup.item_to_pickup.to_string(),
+            item: get_item_name(pickup.item_to_pickup, world),
             position: DynamicPosition { x: pos.x, y: pos.y },
         };
         room_data.items.push(i);
@@ -108,8 +109,7 @@ pub fn create_dynamic_room_entities(world: &mut World, room: i32) {
 
     for item in &room_data.items {
         let item_name = item.item.as_str();
-        let item_flag = crate::items::name_to_item(item_name);
-        crate::room::create_item_at(world, room, item_flag, item.position.x, item.position.y);
+        crate::items::create_item_by_name(world, room, item_name, item.position.x, item.position.y);
     }
 
     for desc in &room_data.descriptions {
