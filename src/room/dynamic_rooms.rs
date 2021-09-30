@@ -6,6 +6,7 @@ use specs::prelude::*;
 use specs::saveload::*;
 use std::fs::File;
 use crate::items::{get_item_name};
+use crate::render::Renderable;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DynamicPosition {
@@ -26,10 +27,26 @@ pub struct DynamicDescriptionData {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct DynamicCombatStats {
+    pub health: i32, 
+    pub max_health: i32,
+    pub damage: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct DynamicEnemy {
+    pub position: DynamicPosition,
+    pub stats: DynamicCombatStats,
+    pub glyph: char,
+    pub description: DynamicDescriptionData,    
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DynamicRoomData {
     pub room: i32,
     pub items: Vec<DynamicItemData>,
     pub descriptions: Vec<DynamicDescriptionData>,
+    pub enemies: Vec<DynamicEnemy>,
 }
 
 impl DynamicRoomData {
@@ -38,6 +55,7 @@ impl DynamicRoomData {
             room: room,
             items: Vec::new(),
             descriptions: Vec::new(),
+            enemies: Vec::new(),
         }
     }
 }
@@ -85,6 +103,24 @@ pub fn update_dynamic_room(world: &mut World, room: i32) {
         room_data.descriptions.push(d);
     }
 
+    let combat_stats = world.read_storage::<CombatStats>();
+    let applies_damages = world.read_storage::<AppliesDamage>();
+    let renderables = world.read_storage::<Renderable>();
+/*
+    pub position: DynamicPosition,
+    pub stats: DynamicCombatStats,
+    pub glyph: char,
+    pub description: DynamicDescriptionData,    
+
+    for (combat_stat, applies_damage, renderable, description, position) in (&combat_stat, &applies_damages, &renderables, &descriptions, &positions).join() {
+        let e = DynamicEnemy {
+            stats: DynamicCombatStats { health: combat_stat.health, max_health: combat_stat.max_health, damage: applies_damage.damage },
+            glyph: renderable.glyph;
+            position: DynamicPosition { x: position.x, y: position.y },
+            description: DynamicDescriptionData { keyword: }
+        }
+    }
+*/
     // save it
     let mut room_datas = world.fetch_mut::<Vec<DynamicRoomData>>();
     room_datas[room as usize] = room_data;

@@ -69,11 +69,15 @@ impl State {
 
             let mut damage_system = combat::DamageSystem {};
             damage_system.run_now(&self.world);
-        }
 
-        let mut exit_trigger_system = game::ExitTriggerSystem::new();
-        exit_trigger_system.run_now(&self.world);
-        self.handle_state_action(exit_trigger_system.state_action);
+            let mut dead_system = combat::ClearDeadSystem::new();
+            dead_system.run_now(&self.world);
+            self.handle_state_action(dead_system.state_action);
+
+            let mut exit_trigger_system = game::ExitTriggerSystem::new();
+            exit_trigger_system.run_now(&self.world);
+            self.handle_state_action(exit_trigger_system.state_action);
+        }        
 
         self.world.maintain();
     }
@@ -180,6 +184,7 @@ fn main() -> rltk::BError {
     // start game
     game::create_player_entity(&mut game_state.world);
     room::change_room(&mut game_state.world, 0, -1);
+    ai::create_test_ai(&mut game_state.world);
     rltk::main_loop(context, game_state)
 }
 

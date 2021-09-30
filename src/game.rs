@@ -25,6 +25,7 @@ pub fn create_player_entity(world: &mut World) {
             max_health: 10,
             health: 10,
         })
+        .with(AppliesDamage { damage: 10 })
         .with(DebugName {
             text: "player".to_string(),
         })

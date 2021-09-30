@@ -1,4 +1,5 @@
 use crate::components::*;
+use crate::StateAction;
 use specs::prelude::*;
 
 pub struct DamageSystem {}
@@ -136,5 +137,34 @@ impl<'a> System<'a> for MeleeCombatSystem {
                 }
             }
         }
+    }
+}
+
+pub struct ClearDeadSystem {
+    pub state_action: StateAction,
+}
+
+impl ClearDeadSystem {
+    pub fn new() -> Self {
+        Self { 
+            state_action: StateAction::None,
+        }
+    }
+}
+
+impl<'a> System<'a> for ClearDeadSystem {
+    type SystemData = (
+        Entities<'a>,
+        ReadStorage<'a, DeadTag>,
+    );
+
+    fn run(&mut self, (entities, dead_tags): Self::SystemData, ) {
+        let mut entities_to_delete = Vec::new();
+
+        for (entity, _dead_tag) in (&entities, &dead_tags).join() {
+            entities_to_delete.push(entity);
+        }
+
+        self.state_action = StateAction::DeleteEntities{ entities: entities_to_delete };
     }
 }

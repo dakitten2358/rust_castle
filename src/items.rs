@@ -114,6 +114,7 @@ fn spawn_item(world: &mut World, room: i32, item: &ItemData, x: i32, y: i32) {
                 .with(PickupTrigger{item_to_pickup: item.flag})
                 .with(crate::room::BelongsToRoom { room: room })
                 .with(if let Some(explicit_name) = &item.input_name { Description::new_explicit(&explicit_name, &item.name, &item.description)} else { Description::new(&item.name, &item.description) })
+                .marked::<SimpleMarker<DynamicMarker>>()
                 .build();
         }
     }
