@@ -1,35 +1,10 @@
 use specs::prelude::*;
 use specs_derive::Component;
-use specs::saveload::*;
 
 use crate::components::*;
 
-use crate::components::{AppliesDamage, CombatStats};
-use crate::render::Renderable;
-use crate::game::DynamicMarker;
-
 #[derive(Component)]
 pub struct AiMoveToPlayer {}
-
-#[allow(dead_code)]
-pub fn create_test_ai(world: &mut World) {
-    world
-        .create_entity()
-        .with(Position { x: 4, y: 4 })
-        .with(Renderable::new_with_z('\u{2663}', rltk::RED, 1))
-        .with(Movement::new())
-        .with(ColliderComponent {})
-        .with(AiMoveToPlayer {})
-        .with(CombatStats {
-            max_health: 10,
-            health: 10,
-        })
-        .with(AppliesDamage { damage: 1 })
-        .with(DebugName {
-            text: "ai".to_string(),
-        })
-        .build();
-}
 
 pub struct AiMoveToPlayerSystem {}
 
@@ -73,26 +48,4 @@ impl<'a> System<'a> for AiMoveToPlayerSystem {
             }
         }
     }
-}
-
-pub fn create_enemy_ai(world: &mut World, room: i32, x: i32, y: i32, glyph: char, health: i32, max_health: i32, damage: i32, name: &str, desc: &str) {
-    world
-    .create_entity()
-    .with(Position { x: x, y: y })
-    .with(Renderable::new_with_z(glyph, rltk::RED, 1))
-    .with(Movement::new())
-    .with(ColliderComponent {})
-    .with(AiMoveToPlayer {})
-    .with(CombatStats {
-        max_health: max_health,
-        health: health,
-    })
-    .with(AppliesDamage { damage: damage })
-    .with(DebugName {
-        text: name.to_string(),
-    })
-    .with(Description::new(name, desc))
-    .with(crate::room::BelongsToRoom { room: room })
-    .marked::<SimpleMarker<DynamicMarker>>()
-    .build();   
 }

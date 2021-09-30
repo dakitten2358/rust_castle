@@ -1,12 +1,11 @@
 use crate::components::*;
 use crate::game::DynamicMarker;
+use crate::items::get_item_name;
 use crate::room::BelongsToRoom;
 use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use specs::saveload::*;
 use std::fs::File;
-use crate::items::{get_item_name};
-use crate::render::Renderable;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DynamicPosition {
@@ -27,18 +26,10 @@ pub struct DynamicDescriptionData {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct DynamicCombatStats {
-    pub health: i32, 
-    pub max_health: i32,
-    pub damage: i32,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DynamicEnemy {
+    pub name: String,
     pub position: DynamicPosition,
-    pub stats: DynamicCombatStats,
-    pub glyph: char,
-    pub description: DynamicDescriptionData,    
+    pub health: Option<i32>, // Option so that when specifying the initial level layout I don't need to specify health, but I do want it saved as state
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -46,7 +37,7 @@ pub struct DynamicRoomData {
     pub room: i32,
     pub items: Vec<DynamicItemData>,
     pub descriptions: Vec<DynamicDescriptionData>,
-    //pub enemies: Vec<DynamicEnemy>,
+    pub enemies: Vec<DynamicEnemy>,
 }
 
 impl DynamicRoomData {
@@ -55,7 +46,7 @@ impl DynamicRoomData {
             room: room,
             items: Vec::new(),
             descriptions: Vec::new(),
-            //enemies: Vec::new(),
+            enemies: Vec::new(),
         }
     }
 }
@@ -104,19 +95,19 @@ pub fn update_dynamic_room(world: &mut World, room: i32) {
     }
 
     let combat_stats = world.read_storage::<CombatStats>();
-    let applies_damages = world.read_storage::<AppliesDamage>();
-    let renderables = world.read_storage::<Renderable>();
-
-    /*
-    for (combat_stat, applies_damage, renderable, description, position, _room) in (&combat_stats, &applies_damages, &renderables, &descriptions, &positions, &room_ownership).join() {
+    for (combat_stat, description, position, _room) in
+        (&combat_stats, &descriptions, &positions, &room_ownership).join()
+    {
         let e = DynamicEnemy {
-            stats: DynamicCombatStats { health: combat_stat.health, max_health: combat_stat.max_health, damage: applies_damage.damage },
-            glyph: renderable.glyph;
-            position: DynamicPosition { x: position.x, y: position.y },
-            description: DynamicDescriptionData { keyword: description.text }
-        }
+            name: description.input_name.clone(),
+            health: Some(combat_stat.health),
+            position: DynamicPosition {
+                x: position.x,
+                y: position.y,
+            },
+        };
+        room_data.enemies.push(e);
     }
-    */
 
     // save it
     let mut room_datas = world.fetch_mut::<Vec<DynamicRoomData>>();
@@ -149,6 +140,19 @@ pub fn create_dynamic_room_entities(world: &mut World, room: i32) {
         let keyword = desc.keyword.as_str();
         let description = desc.text.as_str();
         create_description(world, room, keyword, description)
+    }
+
+    for enemy in &room_data.enemies {
+        let enemy_name = enemy.name.as_str();
+        let health = enemy.health;
+        crate::enemies::create_enemy(
+            world,
+            room,
+            enemy_name,
+            enemy.position.x,
+            enemy.position.y,
+            health,
+        );
     }
 }
 

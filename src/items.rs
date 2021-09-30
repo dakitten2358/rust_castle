@@ -2,11 +2,12 @@ use bitflags::bitflags;
 use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use specs::saveload::*;
-use std::{fmt, fs::File};
+use std::fs::File;
 
 use crate::components::{Description, PickupTrigger, Position};
 use crate::game::DynamicMarker;
 
+// mostly only used in inventory now, should probably look at getting rid of this somehow
 bitflags! {
     #[derive(Serialize, Deserialize)]
     pub struct ItemFlags: u32 {
@@ -37,25 +38,42 @@ bitflags! {
     }
 }
 
+// temp not used, will be used eventually
+#[allow(dead_code)]
 pub fn create_item(world: &mut World, room: i32, item_type: ItemFlags, x: i32, y: i32) {
-    let item = find_item(item_type, &world.fetch::<Vec<ItemData>>()).expect("failed to find item").clone();
+    let item = find_item(item_type, &world.fetch::<Vec<ItemData>>())
+        .expect("failed to find item")
+        .clone();
     spawn_item(world, room, &item, x, y);
 }
 
 pub fn create_item_by_name(world: &mut World, room: i32, item_name: &str, x: i32, y: i32) {
-    let item = find_item_by_name(item_name, &world.fetch::<Vec<ItemData>>()).expect("failed to find item").clone();
+    let item = find_item_by_name(item_name, &world.fetch::<Vec<ItemData>>())
+        .expect("failed to find item")
+        .clone();
     spawn_item(world, room, &item, x, y);
 }
 
 fn spawn_item(world: &mut World, room: i32, item: &ItemData, x: i32, y: i32) {
     match item.flag {
         _ => {
-            world.create_entity()
-                .with(Position{ x: x, y: y})
-                .with(crate::render::Renderable::new_with_z(item.glyph, rltk::WHITE, 1))
-                .with(PickupTrigger{item_to_pickup: item.flag})
+            world
+                .create_entity()
+                .with(Position { x: x, y: y })
+                .with(crate::render::Renderable::new_with_z(
+                    item.glyph,
+                    rltk::WHITE,
+                    1,
+                ))
+                .with(PickupTrigger {
+                    item_to_pickup: item.flag,
+                })
                 .with(crate::room::BelongsToRoom { room: room })
-                .with(if let Some(explicit_name) = &item.input_name { Description::new_explicit(&explicit_name, &item.name, &item.description)} else { Description::new(&item.name, &item.description) })
+                .with(if let Some(explicit_name) = &item.input_name {
+                    Description::new_explicit(&explicit_name, &item.name, &item.description)
+                } else {
+                    Description::new(&item.name, &item.description)
+                })
                 .marked::<SimpleMarker<DynamicMarker>>()
                 .build();
         }
@@ -97,33 +115,38 @@ fn find_item_by_name<'a>(item_to_find: &str, items: &'a Vec<ItemData>) -> Option
 #[derive(Serialize, Deserialize, Clone)]
 struct ItemData {
     pub flag: ItemFlags,
-    pub name: String, 
+    pub name: String,
     pub input_name: Option<String>,
     pub description: String,
     pub glyph: char,
 }
 
-pub fn load_items(world: &mut World)
-{
-    //save_items();
+pub fn load_items(world: &mut World) {
+    save_items();
 
     let f = File::open("data/items.json").expect("item data not found");
-    let items: Vec<ItemData> =
-        serde_json::from_reader(f).expect("failed to deserializer!");
+    let items: Vec<ItemData> = serde_json::from_reader(f).expect("failed to deserializer!");
 
     world.insert(items);
 }
 
 #[allow(dead_code)]
-fn save_items()
-{
+fn save_items() {
     let mut items = Vec::new();
 
-    let item = ItemData { flag: ItemFlags::LAMP, name: "Lamp".to_string(), input_name: Some("lamp".to_string()), description: "It's bright!".to_string(), glyph: '\u{2660}' };
+    let item = ItemData {
+        flag: ItemFlags::LAMP,
+        name: "Lamp".to_string(),
+        input_name: Some("lamp".to_string()),
+        description: "It's bright!".to_string(),
+        glyph: '\u{2660}',
+    };
     items.push(item);
 
     let writer = std::fs::File::create("./data/items_ex.json").unwrap();
     let mut serializer = serde_json::Serializer::pretty(writer);
 
-    (&items).serialize(&mut serializer);
+    (&items)
+        .serialize(&mut serializer)
+        .expect("failed to save example items");
 }

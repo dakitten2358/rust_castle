@@ -177,27 +177,26 @@ impl PlayerTextCommandSystem {
         let first_token = tokens.next();
         let args_string = tokens.format(" ").to_string();
         let args = args_string.as_str();
-        match first_token
-        {
-            Some(token) => {
-                match token {
-                    "look" => {
-                        self.process_look(args, descriptions)
-                    },
-                    "use" => self.process_use(args),
-                    "quit" => self.process_quit(),
-                    _ => None
-                }
+        match first_token {
+            Some(token) => match token {
+                "look" => self.process_look(args, descriptions),
+                "use" => self.process_use(args),
+                "quit" => self.process_quit(),
+                _ => None,
             },
             None => None,
         }
     }
 
-    fn process_look<'a>(&self, look_at_target_name: &str, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
+    fn process_look<'a>(
+        &self,
+        look_at_target_name: &str,
+        descriptions: &ReadStorage<'a, Description>,
+    ) -> Option<String> {
         match look_at_target_name {
             target_name if target_name.len() > 0 => {
                 self.process_look_target(target_name, descriptions)
-            },
+            }
             _ => self.process_look_room(),
         }
     }

@@ -7,6 +7,21 @@
         "keyword": "gate",
         "text": "it looks strong!"
       }
+    ],
+    "enemies": []
+  },
+  {
+    "room": 3,
+    "items": [],
+    "descriptions": [],
+    "enemies": [
+      {
+        "name": "ogre",
+        "position": {
+          "x": 12,
+          "y": 4
+        }
+      }
     ]
   },
   {
@@ -20,7 +35,8 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
   },
   {
     "room": 11,
@@ -33,7 +49,8 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
   },
   {
     "room": 13,
@@ -46,7 +63,16 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": [
+      {
+        "name": "demon",
+        "position": {
+          "x": 12,
+          "y": 7
+        }
+      }
+    ]
   },
   {
     "room": 16,
@@ -59,7 +85,16 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": [
+      {
+        "name": "snake",
+        "position": {
+          "x": 16,
+          "y": 13
+        }
+      }
+    ]
   },
   {
     "room": 19,
@@ -72,7 +107,22 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
+  },
+  {
+    "room": 20,
+    "items": [],
+    "descriptions": [],
+    "enemies": [
+      {
+        "name": "ogre",
+        "position": {
+          "x": 11,
+          "y": 11
+        }
+      }
+    ]
   },
   {
     "room": 21,
@@ -85,7 +135,8 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
   },
   {
     "room": 23,
@@ -98,7 +149,16 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": [
+      {
+        "name": "demon",
+        "position": {
+          "x": 5,
+          "y": 9
+        }
+      }
+    ]
   },
   {
     "room": 25,
@@ -111,7 +171,22 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
+  },
+  {
+    "room": 27,
+    "items": [],
+    "descriptions": [],
+    "enemies": [
+      {
+        "name": "vampire",
+        "position": {
+          "x": 23,
+          "y": 9
+        }
+      }
+    ]
   },
   {
     "room": 28,
@@ -124,7 +199,8 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
   },
   {
     "room": 36,
@@ -137,7 +213,36 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
+  },
+  {
+    "room": 51,
+    "items": [],
+    "descriptions": [],
+    "enemies": [
+      {
+        "name": "fairy",
+        "position": {
+          "x": 0,
+          "y": 9
+        }
+      }
+    ]
+  },
+  {
+    "room": 53,
+    "items": [],
+    "descriptions": [],
+    "enemies": [
+      {
+        "name": "fairy",
+        "position": {
+          "x": 11,
+          "y": 0
+        }
+      }
+    ]
   },
   {
     "room": 56,
@@ -150,7 +255,8 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
   },
   {
     "room": 59,
@@ -163,7 +269,8 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
   },
   {
     "room": 64,
@@ -176,7 +283,8 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
   },
   {
     "room": 65,
@@ -189,7 +297,50 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
+  },
+  {
+    "room": 67,
+    "items": [],
+    "descriptions": [],
+    "enemies": [
+      {
+        "name": "bat",
+        "position": {
+          "x": 17,
+          "y": 4
+        }
+      }
+    ]
+  },
+  {
+    "room": 69,
+    "items": [],
+    "descriptions": [],
+    "enemies": [
+      {
+        "name": "smallspider",
+        "position": {
+          "x": 16,
+          "y": 4
+        }
+      }
+    ]
+  },
+  {
+    "room": 72,
+    "items": [],
+    "descriptions": [],
+    "enemies": [
+      {
+        "name": "bigspider",
+        "position": {
+          "x": 17,
+          "y": 13
+        }
+      }
+    ]
   },
   {
     "room": 73,
@@ -202,7 +353,8 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
   },
   {
     "room": 82,
@@ -215,6 +367,7 @@
         }
       }
     ],
-    "descriptions": []
+    "descriptions": [],
+    "enemies": []
   }
 ]

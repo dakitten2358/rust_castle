@@ -5,6 +5,7 @@ use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 mod ai;
 mod combat;
 mod components;
+mod enemies;
 mod game;
 mod hud;
 mod input;
@@ -77,7 +78,7 @@ impl State {
             let mut exit_trigger_system = game::ExitTriggerSystem::new();
             exit_trigger_system.run_now(&self.world);
             self.handle_state_action(exit_trigger_system.state_action);
-        }        
+        }
 
         self.world.maintain();
     }
@@ -178,13 +179,13 @@ fn main() -> rltk::BError {
 
     // load raw data
     items::load_items(&mut game_state.world);
+    enemies::load_enemies(&mut game_state.world);
     room::load_rooms(&mut game_state.world);
     room::load_dynamic_rooms(&mut game_state.world);
 
     // start game
     game::create_player_entity(&mut game_state.world);
     room::change_room(&mut game_state.world, 0, -1);
-    ai::create_test_ai(&mut game_state.world);
     rltk::main_loop(context, game_state)
 }
 

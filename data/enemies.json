@@ -1,0 +1,66 @@
+[
+  {
+    "name": "Ugly Ogre",
+    "input_name": "ogre",
+    "description": "",
+    "glyph": "\u263A",
+    "health": 1,
+    "damage": 1
+  },
+  {
+    "name": "Angry Demon",
+    "input_name": "demon",
+    "description": "",
+    "glyph": "\u263B",
+    "health": 1,
+    "damage": 1
+  },
+  {
+    "name": "Big Spider",
+    "input_name": "bigspider",
+    "description": "",
+    "glyph": "\u263C",
+    "health": 1,
+    "damage": 1
+  },
+  {
+    "name": "Small Spider",
+    "input_name": "smallspider",
+    "description": "",
+    "glyph": "*",
+    "health": 1,
+    "damage": 1
+  },
+  {
+    "name": "Bat",
+    "input_name": "bat",
+    "description": "",
+    "glyph": "<",
+    "health": 1,
+    "damage": 1
+  },
+  {
+    "name": "Snake",
+    "input_name": "snake",
+    "description": "",
+    "glyph": "\u03B4",
+    "health": 1,
+    "damage": 1
+  },
+  {
+    "name": "Vampire",
+    "input_name": "vampire",
+    "description": "",
+    "glyph": "\u2663",
+    "health": 1,
+    "damage": 1
+  },
+  {
+    "name": "Fairy",
+    "input_name": "fairy",
+    "description": "",
+    "glyph": "%",
+    "health": 1,
+    "damage": 1
+  }
+]
