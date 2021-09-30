@@ -46,7 +46,7 @@ pub struct DynamicRoomData {
     pub room: i32,
     pub items: Vec<DynamicItemData>,
     pub descriptions: Vec<DynamicDescriptionData>,
-    pub enemies: Vec<DynamicEnemy>,
+    //pub enemies: Vec<DynamicEnemy>,
 }
 
 impl DynamicRoomData {
@@ -55,7 +55,7 @@ impl DynamicRoomData {
             room: room,
             items: Vec::new(),
             descriptions: Vec::new(),
-            enemies: Vec::new(),
+            //enemies: Vec::new(),
         }
     }
 }
@@ -106,21 +106,18 @@ pub fn update_dynamic_room(world: &mut World, room: i32) {
     let combat_stats = world.read_storage::<CombatStats>();
     let applies_damages = world.read_storage::<AppliesDamage>();
     let renderables = world.read_storage::<Renderable>();
-/*
-    pub position: DynamicPosition,
-    pub stats: DynamicCombatStats,
-    pub glyph: char,
-    pub description: DynamicDescriptionData,    
 
-    for (combat_stat, applies_damage, renderable, description, position) in (&combat_stat, &applies_damages, &renderables, &descriptions, &positions).join() {
+    /*
+    for (combat_stat, applies_damage, renderable, description, position, _room) in (&combat_stats, &applies_damages, &renderables, &descriptions, &positions, &room_ownership).join() {
         let e = DynamicEnemy {
             stats: DynamicCombatStats { health: combat_stat.health, max_health: combat_stat.max_health, damage: applies_damage.damage },
             glyph: renderable.glyph;
             position: DynamicPosition { x: position.x, y: position.y },
-            description: DynamicDescriptionData { keyword: }
+            description: DynamicDescriptionData { keyword: description.text }
         }
     }
-*/
+    */
+
     // save it
     let mut room_datas = world.fetch_mut::<Vec<DynamicRoomData>>();
     room_datas[room as usize] = room_data;

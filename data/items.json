@@ -4,21 +4,24 @@
       "bits": 1
     },
     "name": "Lamp",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u2660"
   },
   {
     "flag": {
       "bits": 2
     },
     "name": "Scepter",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u00DF"
   },
   {
     "flag": {
       "bits": 4
     },
     "name": "Book",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u2584"
   },
   {
     "flag": {
@@ -26,21 +29,24 @@
     },
     "name": "Magic Wand",
     "input_name": "wand",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u2500"
   },
   {
     "flag": {
       "bits": 16
     },
     "name": "Sword",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u253C"
   },
   {
     "flag": {
       "bits": 32
     },
     "name": "Key",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u03C4"
   },
   {
     "flag": {
@@ -48,14 +54,16 @@
     },
     "name": "Eye Glasses",
     "input_name": "glasses",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u221E"
   },
   {
     "flag": {
       "bits": 128
     },
     "name": "Helmet",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u00A2"
   },
   {
     "flag": {
@@ -63,7 +71,8 @@
     },
     "name": "Wine Flask",
     "input_name": "flask",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u00A1"
   },
   {
     "flag": {
@@ -71,14 +80,16 @@
     },
     "name": "Crystal Ball",
     "input_name": "crystal",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u00B0"
   },
   {
     "flag": {
       "bits": 1024
     },
     "name": "Necklace",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u00A7"
   },
   {
     "flag": {
@@ -86,14 +97,16 @@
     },
     "name": "Holy Cross",
     "input_name": "cross",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u0074"
   },
   {
     "flag": {
       "bits": 4096
     },
     "name": "Diamond",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u2666"
   },
   {
     "flag": {
@@ -101,14 +114,16 @@
     },
     "name": "Silver Bars",
     "input_name": "silver",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u2261"
   },
   {
     "flag": {
       "bits": 16384
     },
     "name": "Rubies",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u003A"
   },
   {
     "flag": {
@@ -116,21 +131,24 @@
     },
     "name": "Jade Figurine",
     "input_name": "figurine",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u00A5"
   },
   {
     "flag": {
       "bits": 65536
     },
     "name": "Harp",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u266B"
   },
   {
     "flag": {
       "bits": 131072
     },
     "name": "Hourglass",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u03A6"
   },
   {
     "flag": {
@@ -138,7 +156,8 @@
     },
     "name": "Large Gem",
     "input_name": "gem",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u0398"
   },
   {
     "flag": {
@@ -146,7 +165,8 @@
     },
     "name": "Gold Bar",
     "input_name": "gold",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u25A0"
   },
   {
     "flag": {
@@ -154,13 +174,15 @@
     },
     "name": "Fancy Goblet",
     "input_name": "goblet",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u00B5"
   },
   {
     "flag": {
       "bits": 2097152
     },
     "name": "Crown",
-    "description": "It's bright!"
+    "description": "It's bright!",
+    "glyph": "\u2302"
   }
 ]

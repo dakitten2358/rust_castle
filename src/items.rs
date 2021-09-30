@@ -36,64 +36,6 @@ bitflags! {
         const ANYTHING      = 0b1111111111111111111111111111111;
     }
 }
-/*
-impl fmt::Display for ItemFlags {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            ItemFlags::LAMP => write!(f, "Lamp"),
-            ItemFlags::SCEPTER => write!(f, "Scepter"),
-            ItemFlags::BOOK => write!(f, "Book"),
-            ItemFlags::MAGICWAND => write!(f, "Magic Wand"),
-            ItemFlags::SWORD => write!(f, "Sword"),
-            ItemFlags::KEY => write!(f, "Key"),
-            ItemFlags::EYEGLASSES => write!(f, "Eye Glasses"),
-            ItemFlags::HELMET => write!(f, "Helmet"),
-            ItemFlags::WINEFLASK => write!(f, "Wine Flask"),
-            ItemFlags::CRYSTALBALL => write!(f, "Crystal Ball"),
-            ItemFlags::NECKLACE => write!(f, "Necklace"),
-            ItemFlags::HOLYCROSS => write!(f, "Holy Cross"),
-            ItemFlags::DIAMOND => write!(f, "Diamond"),
-            ItemFlags::SILVERBARS => write!(f, "Silver Bars"),
-            ItemFlags::RUBIES => write!(f, "Rubies"),
-            ItemFlags::JADEFIGURINE => write!(f, "Jade Figurine"),
-            ItemFlags::HARP => write!(f, "Harp"),
-            ItemFlags::HOURGLASS => write!(f, "Hourglass"),
-            ItemFlags::LARGEGEM => write!(f, "Large Gem"),
-            ItemFlags::GOLDBAR => write!(f, "Gold Bar"),
-            ItemFlags::FANCYGOBLET => write!(f, "Fancy Goblet"),
-            ItemFlags::CROWN => write!(f, "Crown"),
-            _ => write!(f, "<error>"),
-        }
-    }
-}
-*/
-fn item_to_glyph(item_type: ItemFlags) -> char {
-    match item_type {
-        ItemFlags::LAMP => '\u{2660}',
-        ItemFlags::SCEPTER => '\u{00DF}',
-        ItemFlags::BOOK => '\u{2584}',
-        ItemFlags::MAGICWAND => '\u{2500}',
-        ItemFlags::SWORD => '\u{253C}',
-        ItemFlags::KEY => '\u{03C4}',
-        ItemFlags::EYEGLASSES => '\u{221E}',
-        ItemFlags::HELMET => '\u{00A2}',
-        ItemFlags::WINEFLASK => '\u{00A1}',
-        ItemFlags::CRYSTALBALL => '\u{00B0}',
-        ItemFlags::NECKLACE => '\u{00A7}',
-        ItemFlags::HOLYCROSS => '\u{0074}',
-        ItemFlags::DIAMOND => '\u{2666}',
-        ItemFlags::SILVERBARS => '\u{2261}',
-        ItemFlags::RUBIES => '\u{003A}',
-        ItemFlags::JADEFIGURINE => '\u{00A5}',
-        ItemFlags::HARP => '\u{266B}',
-        ItemFlags::HOURGLASS => '\u{03A6}',
-        ItemFlags::LARGEGEM => '\u{0398}',
-        ItemFlags::GOLDBAR => '\u{25A0}',
-        ItemFlags::FANCYGOBLET => '\u{00B5}',
-        ItemFlags::CROWN => '\u{2302}',
-        _ => ' ',
-    }
-}
 
 pub fn create_item(world: &mut World, room: i32, item_type: ItemFlags, x: i32, y: i32) {
     let item = find_item(item_type, &world.fetch::<Vec<ItemData>>()).expect("failed to find item").clone();
@@ -110,7 +52,7 @@ fn spawn_item(world: &mut World, room: i32, item: &ItemData, x: i32, y: i32) {
         _ => {
             world.create_entity()
                 .with(Position{ x: x, y: y})
-                .with(crate::render::Renderable::new_with_z(item_to_glyph(item.flag), rltk::WHITE, 1))
+                .with(crate::render::Renderable::new_with_z(item.glyph, rltk::WHITE, 1))
                 .with(PickupTrigger{item_to_pickup: item.flag})
                 .with(crate::room::BelongsToRoom { room: room })
                 .with(if let Some(explicit_name) = &item.input_name { Description::new_explicit(&explicit_name, &item.name, &item.description)} else { Description::new(&item.name, &item.description) })
@@ -145,7 +87,7 @@ fn find_item_by_name<'a>(item_to_find: &str, items: &'a Vec<ItemData>) -> Option
                 return Some(item);
             }
         }
-        if item.name.to_ascii_lowercase() == item_to_find {
+        if item.name.to_ascii_lowercase() == item_to_find.to_ascii_lowercase() {
             return Some(item);
         }
     }
@@ -158,6 +100,7 @@ struct ItemData {
     pub name: String, 
     pub input_name: Option<String>,
     pub description: String,
+    pub glyph: char,
 }
 
 pub fn load_items(world: &mut World)
@@ -171,14 +114,15 @@ pub fn load_items(world: &mut World)
     world.insert(items);
 }
 
+#[allow(dead_code)]
 fn save_items()
 {
     let mut items = Vec::new();
 
-    let item = ItemData { flag: ItemFlags::LAMP, name: "Lamp".to_string(), input_name: Some("lamp".to_string()), description: "It's bright!".to_string()};
+    let item = ItemData { flag: ItemFlags::LAMP, name: "Lamp".to_string(), input_name: Some("lamp".to_string()), description: "It's bright!".to_string(), glyph: '\u{2660}' };
     items.push(item);
 
-    let writer = std::fs::File::create("./data/items.json").unwrap();
+    let writer = std::fs::File::create("./data/items_ex.json").unwrap();
     let mut serializer = serde_json::Serializer::pretty(writer);
 
     (&items).serialize(&mut serializer);
