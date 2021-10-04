@@ -181,12 +181,18 @@ impl<'a> System<'a> for DebugHudSystem<'_> {
         ReadStorage<'a, Player>,
         ReadStorage<'a, DebugHudComponent>,
         ReadExpect<'a, Vec<RoomData>>,
+        ReadStorage<'a, CombatStats>,
     );
 
-    fn run(&mut self, (players, debug_huds, _room_datas): Self::SystemData) {
+    fn run(&mut self, (players, debug_huds, _room_datas, combat_stats): Self::SystemData) {
         // debug
         for (_player, _debug) in (&players, &debug_huds).join() {
             self.context.print(37, 24, self.room.to_string());
+        }
+
+        for (_player, _debug, combat_stat) in (&players, &debug_huds, &combat_stats).join() {
+            let health_text = format!("{}/{}", combat_stat.health, combat_stat.max_health);
+            self.context.print(28, 24, health_text);
         }
     }
 }
