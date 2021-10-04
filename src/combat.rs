@@ -33,24 +33,28 @@ fn add_damage(
 impl<'a> System<'a> for DamageSystem {
     type SystemData = (
         Entities<'a>,
+        ReadStorage<'a, Player>,
         WriteStorage<'a, CombatStats>,
         WriteStorage<'a, ApplyDamageComponent>,
         WriteStorage<'a, DeadTag>,
         WriteStorage<'a, WantsToAttack>,
         ReadStorage<'a, AppliesDamage>,
         WriteStorage<'a, CombatLog>,
+        ReadStorage<'a, Description>,
     );
 
     fn run(
         &mut self,
         (
             entities,
+            players,
             mut combat_stats,
             mut apply_damages,
             mut dead_tags,
             mut wants_to_attack,
             applies_damages,
             mut combat_logs,
+            descriptions,
         ): Self::SystemData,
     ) {
         // check for people that want to apply damage to an entity
@@ -70,16 +74,38 @@ impl<'a> System<'a> for DamageSystem {
         for (entity, combat_stat, apply_damages) in
             (&entities, &mut combat_stats, &apply_damages).join()
         {
-            combat_stat.health -= apply_damages.amounts.iter().sum::<i32>();
-            if let Some(combat_log) = combat_logs.get_mut(entity) {
-                combat_log.push(format!("you were hit"));
-            }
-            if combat_stat.health <= 0 {
-                kill(entity, &mut dead_tags);
-                println!("killed!");
+            if combat_stat.health > 0 {
+                combat_stat.health -= apply_damages.amounts.iter().sum::<i32>();
+                if let Some(combat_log) = combat_logs.get_mut(entity) {
+                    combat_log.push(format!("You were hit"));
+                } else {
+                    for (_player, combat_log) in (&players, &mut combat_logs).join() {
+                        let maybe_name = get_entity_name(entity, &descriptions);
+                        match maybe_name {
+                            Some(name) => {
+                                let msg = format!("{} was hit!", name.as_str());
+                                combat_log.push(msg);
+                            }
+                            None => combat_log.push("unknown was hit!".to_string()),
+                        }
+                    }
+                }
+
+                if combat_stat.health <= 0 {
+                    kill(entity, &mut dead_tags);
+                    println!("killed!");
+                }
             }
         }
         apply_damages.clear();
+    }
+}
+
+pub fn get_entity_name(e: Entity, descriptions: &ReadStorage<Description>) -> Option<String> {
+    let desc = descriptions.get(e);
+    match desc {
+        Some(description) => Some(description.name.clone()),
+        None => None,
     }
 }
 

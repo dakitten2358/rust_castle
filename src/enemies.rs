@@ -32,13 +32,12 @@ fn spawn_enemy(
     y: i32,
     health: Option<i32>,
 ) {
-    world
+    let mut entity = world
         .create_entity()
         .with(Position { x: x, y: y })
         .with(Renderable::new_with_z(item.glyph, rltk::RED, 1))
         .with(Movement::new())
         .with(ColliderComponent {})
-        .with(AiMoveToPlayer {})
         .with(CombatStats {
             max_health: item.health,
             health: if let Some(valid_health) = health {
@@ -46,9 +45,6 @@ fn spawn_enemy(
             } else {
                 item.health
             },
-        })
-        .with(AppliesDamage {
-            damage: item.damage,
         })
         .with(DebugName {
             text: item.name.clone(),
@@ -59,8 +55,15 @@ fn spawn_enemy(
         } else {
             Description::new(&item.name, &item.description)
         })
-        .marked::<SimpleMarker<DynamicMarker>>()
-        .build();
+        .marked::<SimpleMarker<DynamicMarker>>();
+
+    if let Some(damage) = item.damage {
+        entity = entity
+            .with(AppliesDamage { damage: damage })
+            .with(AiMoveToPlayer {})
+    }
+
+    entity.build();
 }
 
 fn find_enemy_by_name<'a>(
@@ -87,7 +90,7 @@ struct EnemyData {
     pub description: String,
     pub glyph: char,
     pub health: i32, // max health
-    pub damage: i32,
+    pub damage: Option<i32>,
 }
 
 pub fn load_enemies(world: &mut World) {
@@ -109,7 +112,7 @@ fn save_enemies() {
         description: "It's smelly!".to_string(),
         glyph: '\u{263A}',
         health: 1,
-        damage: 1,
+        damage: Some(1),
     };
     enemies.push(e);
 

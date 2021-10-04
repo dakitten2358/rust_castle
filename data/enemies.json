@@ -4,7 +4,7 @@
     "input_name": "ogre",
     "description": "",
     "glyph": "\u263A",
-    "health": 1,
+    "health": 10,
     "damage": 1
   },
   {
@@ -12,7 +12,7 @@
     "input_name": "demon",
     "description": "",
     "glyph": "\u263B",
-    "health": 1,
+    "health": 10,
     "damage": 1
   },
   {
@@ -52,15 +52,13 @@
     "input_name": "vampire",
     "description": "",
     "glyph": "\u2663",
-    "health": 1,
-    "damage": 1
+    "health": 0
   },
   {
     "name": "Fairy",
     "input_name": "fairy",
     "description": "",
     "glyph": "%",
-    "health": 1,
-    "damage": 1
+    "health": 0
   }
 ]
