@@ -40,6 +40,13 @@ pub struct DynamicRoomData {
     pub enemies: Vec<DynamicEnemy>,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum DynamicActionData {
+    GiveItem { item: String },
+    AddFlag { flag: String },
+    UpdateMap { x: i32, y: i32, }
+}
+
 impl DynamicRoomData {
     pub fn empty(room: i32) -> Self {
         Self {
@@ -163,4 +170,8 @@ fn create_description(world: &mut World, room: i32, word: &str, description: &st
         .with(Description::new(word, description))
         .marked::<SimpleMarker<DynamicMarker>>()
         .build();
+}
+
+fn setup_dynamic_data_example() {
+
 }

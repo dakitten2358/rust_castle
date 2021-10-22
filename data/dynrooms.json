@@ -8,6 +8,19 @@
         "text": "it looks strong!"
       }
     ],
+    "usables": [
+      {
+        "key": "use",
+        "text": "scepter",
+        "requires": "scepter",
+        "description": "the gate disappears!",
+        "actions": [
+          {
+
+          }
+        ]
+      }
+    ],
     "enemies": []
   },
   {
