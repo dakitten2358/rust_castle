@@ -4,7 +4,7 @@
       "bits": 1
     },
     "name": "Lamp",
-    "description": "It's bright!",
+    "description": "The Lamp Is Magically Lit",
     "glyph": "\u2660"
   },
   {
@@ -12,7 +12,7 @@
       "bits": 2
     },
     "name": "Scepter",
-    "description": "It's bright!",
+    "description": "A Firey Ruby Sits Atop This Powerful Scepter",
     "glyph": "\u00DF"
   },
   {
@@ -20,7 +20,11 @@
       "bits": 4
     },
     "name": "Book",
-    "description": "It's bright!",
+    "description": "The Words Are Too Blurry To Read",
+    "conditional": {
+      "requires": "glasses",
+      "description": "Book Title: \"The Gate\"   --Wave Scepter--"
+    },
     "glyph": "\u2584"
   },
   {
@@ -29,7 +33,7 @@
     },
     "name": "Magic Wand",
     "input_name": "wand",
-    "description": "It's bright!",
+    "description": "A Magical Silver Wand!",
     "glyph": "\u2500"
   },
   {
@@ -37,7 +41,7 @@
       "bits": 16
     },
     "name": "Sword",
-    "description": "It's bright!",
+    "description": "A Solid Steel Sword!",
     "glyph": "\u253C"
   },
   {
@@ -45,7 +49,7 @@
       "bits": 32
     },
     "name": "Key",
-    "description": "It's bright!",
+    "description": "A Rusty Looking Key!",
     "glyph": "\u03C4"
   },
   {
@@ -54,7 +58,7 @@
     },
     "name": "Eye Glasses",
     "input_name": "glasses",
-    "description": "It's bright!",
+    "description": "A Pair of Bifocals!",
     "glyph": "\u221E"
   },
   {
@@ -62,7 +66,7 @@
       "bits": 128
     },
     "name": "Helmet",
-    "description": "It's bright!",
+    "description": "A Solid Looking Helmet!",
     "glyph": "\u00A2"
   },
   {
@@ -71,7 +75,7 @@
     },
     "name": "Wine Flask",
     "input_name": "flask",
-    "description": "It's bright!",
+    "description": "A Magical Wine Flask!",
     "glyph": "\u00A1"
   },
   {
@@ -80,7 +84,7 @@
     },
     "name": "Crystal Ball",
     "input_name": "crystal",
-    "description": "It's bright!",
+    "description": "You See A Man In A Winding Passage, Waving A Wand!",
     "glyph": "\u00B0"
   },
   {
@@ -88,7 +92,7 @@
       "bits": 1024
     },
     "name": "Necklace",
-    "description": "It's bright!",
+    "description": "here Is An Inscription On The Back! \"Protection From Traps!\"",
     "glyph": "\u00A7"
   },
   {
@@ -97,7 +101,7 @@
     },
     "name": "Holy Cross",
     "input_name": "cross",
-    "description": "It's bright!",
+    "description": "A Gold Cross With Four Gems Set In The Points",
     "glyph": "\u0074"
   },
   {
@@ -105,7 +109,7 @@
       "bits": 4096
     },
     "name": "Diamond",
-    "description": "It's bright!",
+    "description": "A Flawless Perfect Cut Diamond!",
     "glyph": "\u2666"
   },
   {
@@ -114,7 +118,7 @@
     },
     "name": "Silver Bars",
     "input_name": "silver",
-    "description": "It's bright!",
+    "description": "Two Solid Silver Bars!",
     "glyph": "\u2261"
   },
   {
@@ -122,7 +126,7 @@
       "bits": 16384
     },
     "name": "Rubies",
-    "description": "It's bright!",
+    "description": "A Large Beautiful Ruby!",
     "glyph": "\u003A"
   },
   {
@@ -131,7 +135,7 @@
     },
     "name": "Jade Figurine",
     "input_name": "figurine",
-    "description": "It's bright!",
+    "description": "A Solid Jade Figurine With Sapphires For Eyes!",
     "glyph": "\u00A5"
   },
   {
@@ -139,7 +143,7 @@
       "bits": 65536
     },
     "name": "Harp",
-    "description": "It's bright!",
+    "description": "A Solid Gold Harp!",
     "glyph": "\u266B"
   },
   {
@@ -147,7 +151,7 @@
       "bits": 131072
     },
     "name": "Hourglass",
-    "description": "It's bright!",
+    "description": "A Gold HourGlass With Diamond Sand!",
     "glyph": "\u03A6"
   },
   {
@@ -156,7 +160,7 @@
     },
     "name": "Large Gem",
     "input_name": "gem",
-    "description": "It's bright!",
+    "description": "A Very Large Priceless Gem!",
     "glyph": "\u0398"
   },
   {
@@ -165,7 +169,7 @@
     },
     "name": "Gold Bar",
     "input_name": "gold",
-    "description": "It's bright!",
+    "description": "It Is A Solid Gold Bar!",
     "glyph": "\u25A0"
   },
   {
@@ -174,7 +178,7 @@
     },
     "name": "Fancy Goblet",
     "input_name": "goblet",
-    "description": "It's bright!",
+    "description": "It Is Made Out of Gold!",
     "glyph": "\u00B5"
   },
   {
@@ -182,7 +186,7 @@
       "bits": 2097152
     },
     "name": "Crown",
-    "description": "It's bright!",
+    "description": "It Is Made Out Of Gold With Rubys Attached!",
     "glyph": "\u2302"
   }
 ]
