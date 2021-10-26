@@ -59,7 +59,7 @@ impl DynamicRoomData {
 }
 
 pub fn load_dynamic_rooms(world: &mut World) {
-    //setup_dynamic_data_example();
+    setup_dynamic_room_data_example();
 
     let f = File::open("data/dynrooms.json").expect("data not found");
     let loaded_rooms: Vec<DynamicRoomData> =
@@ -172,6 +172,20 @@ fn create_description(world: &mut World, room: i32, word: &str, description: &st
         .build();
 }
 
-fn setup_dynamic_data_example() {
+fn setup_dynamic_room_data_example() {
+    let mut rooms = Vec::new();
+    let room = DynamicRoomData { 
+        room: 1,
+        items: Vec::new(),
+        descriptions: Vec::new(),
+        enemies: Vec::new(), 
+    };
+    rooms.push(room);
 
+    let writer = std::fs::File::create("./data/dynrooms_ex.json").unwrap();
+    let mut serializer = serde_json::Serializer::pretty(writer);
+
+    (&rooms)
+        .serialize(&mut serializer)
+        .expect("failed to save example rooms");
 }
