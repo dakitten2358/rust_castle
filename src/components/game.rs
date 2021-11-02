@@ -163,9 +163,7 @@ pub struct InventoryComponent {
 
 impl InventoryComponent {
     pub fn new() -> Self {
-        Self {
-            items: ItemFlags::EMPTY,
-        }
+        Self { items: ItemFlags::EMPTY }
     }
     pub fn add(&mut self, item: ItemFlags) {
         self.items |= item;

@@ -65,8 +65,7 @@ impl<'a> HudSystem<'a> {
                 space_length = 0;
             }
 
-            self.context
-                .print(current_x + space_length, current_y, token);
+            self.context.print(current_x + space_length, current_y, token);
             current_x += text_length + space_length;
         }
     }
@@ -81,11 +80,7 @@ impl<'a> HudSystem<'a> {
         }
     }
 
-    fn print_glyph_descriptions(
-        &mut self,
-        renderables: &ReadStorage<'a, Renderable>,
-        descriptions: &ReadStorage<'a, Description>,
-    ) {
+    fn print_glyph_descriptions(&mut self, renderables: &ReadStorage<'a, Renderable>, descriptions: &ReadStorage<'a, Description>) {
         let start_x = 25;
         let start_y = 0;
         let mut current_y = start_y;
@@ -98,8 +93,7 @@ impl<'a> HudSystem<'a> {
                 rltk::RGB::named(rltk::BLACK),
                 renderable.glyph,
             );
-            self.context
-                .print(start_x + 2, current_y, description.name.as_str());
+            self.context.print(start_x + 2, current_y, description.name.as_str());
             current_y += 1;
         }
     }
@@ -128,15 +122,7 @@ impl<'a> System<'a> for HudSystem<'a> {
 
     fn run(
         &mut self,
-        (
-            _players,
-            player_text_inputs,
-            active_descriptions,
-            room_datas,
-            combat_logs,
-            renderables,
-            descriptions,
-        ): Self::SystemData,
+        (_players, player_text_inputs, active_descriptions, room_datas, combat_logs, renderables, descriptions): Self::SystemData,
     ) {
         self.draw_map_border();
 

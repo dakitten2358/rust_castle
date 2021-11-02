@@ -108,9 +108,7 @@ pub fn change_room(world: &mut World, new_room: i32, old_room: i32) {
     // remove the old room
     let old_entities = find_entities_to_remove(world, old_room);
     for old_entity in old_entities {
-        world
-            .delete_entity(old_entity)
-            .expect("Unable to delete entity");
+        world.delete_entity(old_entity).expect("Unable to delete entity");
     }
     // set up the new room
     let room_data = get_room_data(world, new_room);
@@ -144,10 +142,7 @@ pub fn create_room_entities(world: &mut World, room: i32, room_data: &RoomData) 
     // create entities for hte tiles
     for tile in &room_data.tiles {
         let mut entity_builder = world.create_entity();
-        entity_builder = entity_builder.with(Position {
-            x: tile.x,
-            y: tile.y,
-        });
+        entity_builder = entity_builder.with(Position { x: tile.x, y: tile.y });
         entity_builder = entity_builder.with(Renderable::new(tile.glyph, rltk::GREY));
 
         if tile.collision == Collision::Enabled {
@@ -155,10 +150,7 @@ pub fn create_room_entities(world: &mut World, room: i32, room_data: &RoomData) 
         }
 
         match exit_data_for_tile(room_data, tile) {
-            Some(exit_data) => {
-                entity_builder =
-                    entity_builder.with(ExitTrigger::new(exit_data.direction, exit_data.to_room))
-            }
+            Some(exit_data) => entity_builder = entity_builder.with(ExitTrigger::new(exit_data.direction, exit_data.to_room)),
             _ => {}
         }
 
@@ -170,27 +162,13 @@ pub fn create_room_entities(world: &mut World, room: i32, room_data: &RoomData) 
     for row in 0..18 {
         match find_exit_data(ExitDirection::West, &room_data.exits) {
             Some(exit_data) => {
-                create_edge_exit_entity(
-                    world,
-                    room,
-                    -1,
-                    row,
-                    exit_data.direction,
-                    exit_data.to_room,
-                );
+                create_edge_exit_entity(world, room, -1, row, exit_data.direction, exit_data.to_room);
             }
             _ => {}
         }
         match find_exit_data(ExitDirection::East, &room_data.exits) {
             Some(exit_data) => {
-                create_edge_exit_entity(
-                    world,
-                    room,
-                    24,
-                    row,
-                    exit_data.direction,
-                    exit_data.to_room,
-                );
+                create_edge_exit_entity(world, room, 24, row, exit_data.direction, exit_data.to_room);
             }
             _ => {}
         }
@@ -199,41 +177,20 @@ pub fn create_room_entities(world: &mut World, room: i32, room_data: &RoomData) 
     for col in 1..23 {
         match find_exit_data(ExitDirection::North, &room_data.exits) {
             Some(exit_data) => {
-                create_edge_exit_entity(
-                    world,
-                    room,
-                    col,
-                    -1,
-                    exit_data.direction,
-                    exit_data.to_room,
-                );
+                create_edge_exit_entity(world, room, col, -1, exit_data.direction, exit_data.to_room);
             }
             _ => {}
         }
         match find_exit_data(ExitDirection::South, &room_data.exits) {
             Some(exit_data) => {
-                create_edge_exit_entity(
-                    world,
-                    room,
-                    col,
-                    18,
-                    exit_data.direction,
-                    exit_data.to_room,
-                );
+                create_edge_exit_entity(world, room, col, 18, exit_data.direction, exit_data.to_room);
             }
             _ => {}
         }
     }
 }
 
-fn create_edge_exit_entity(
-    world: &mut World,
-    room: i32,
-    x: i32,
-    y: i32,
-    direction: ExitDirection,
-    to_room: i32,
-) {
+fn create_edge_exit_entity(world: &mut World, room: i32, x: i32, y: i32, direction: ExitDirection, to_room: i32) {
     world
         .create_entity()
         .with(Position { x: x, y: y })
@@ -266,8 +223,7 @@ pub fn load_rooms(world: &mut World) {
 
     for room in 0..83 {
         let mut room_data_buffer: [u8; 24 * 18] = [0; 24 * 18];
-        f.read(&mut room_data_buffer)
-            .expect("failed to read room data");
+        f.read(&mut room_data_buffer).expect("failed to read room data");
 
         let mut room_data = RoomData::new();
         for row in 0..18 {
@@ -287,8 +243,7 @@ pub fn load_rooms(world: &mut World) {
         }
 
         let mut room_description_buffer: [u8; 25 * 5] = [0; 25 * 5];
-        f.read(&mut room_description_buffer)
-            .expect("failed ot read room description");
+        f.read(&mut room_description_buffer).expect("failed ot read room description");
 
         for row in 0..5 {
             let line_bytes = &room_description_buffer[row * 25..(row * 25) + 25];
@@ -297,8 +252,7 @@ pub fn load_rooms(world: &mut World) {
         }
 
         let mut room_exits_bytes: [u8; 18] = [0; 18];
-        f.read(&mut room_exits_bytes)
-            .expect("failed to read exit string");
+        f.read(&mut room_exits_bytes).expect("failed to read exit string");
 
         let exit_text = str::from_utf8(&room_exits_bytes).unwrap();
         println!("exits for room {} are {}", room, exit_text);

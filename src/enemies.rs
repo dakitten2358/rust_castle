@@ -10,28 +10,14 @@ use crate::components::{AppliesDamage, CombatStats};
 use crate::game::DynamicMarker;
 use crate::render::Renderable;
 
-pub fn create_enemy(
-    world: &mut World,
-    room: i32,
-    enemy_name: &str,
-    x: i32,
-    y: i32,
-    health: Option<i32>,
-) {
+pub fn create_enemy(world: &mut World, room: i32, enemy_name: &str, x: i32, y: i32, health: Option<i32>) {
     let enemy = find_enemy_by_name(enemy_name, &world.fetch::<Vec<EnemyData>>())
         .expect("failed to find enemy")
         .clone();
     spawn_enemy(world, room, &enemy, x, y, health);
 }
 
-fn spawn_enemy(
-    world: &mut World,
-    room: i32,
-    item: &EnemyData,
-    x: i32,
-    y: i32,
-    health: Option<i32>,
-) {
+fn spawn_enemy(world: &mut World, room: i32, item: &EnemyData, x: i32, y: i32, health: Option<i32>) {
     let mut entity = world
         .create_entity()
         .with(Position { x: x, y: y })
@@ -46,9 +32,7 @@ fn spawn_enemy(
                 item.health
             },
         })
-        .with(DebugName {
-            text: item.name.clone(),
-        })
+        .with(DebugName { text: item.name.clone() })
         .with(crate::room::BelongsToRoom { room: room })
         .with(if let Some(explicit_name) = &item.input_name {
             Description::new_explicit(&explicit_name, &item.name, &item.description)
@@ -58,18 +42,13 @@ fn spawn_enemy(
         .marked::<SimpleMarker<DynamicMarker>>();
 
     if let Some(damage) = item.damage {
-        entity = entity
-            .with(AppliesDamage { damage: damage })
-            .with(AiMoveToPlayer {})
+        entity = entity.with(AppliesDamage { damage: damage }).with(AiMoveToPlayer {})
     }
 
     entity.build();
 }
 
-fn find_enemy_by_name<'a>(
-    enemy_to_find: &str,
-    enemies: &'a Vec<EnemyData>,
-) -> Option<&'a EnemyData> {
+fn find_enemy_by_name<'a>(enemy_to_find: &str, enemies: &'a Vec<EnemyData>) -> Option<&'a EnemyData> {
     for enemy in enemies {
         if let Some(input_name) = &enemy.input_name {
             if input_name == enemy_to_find {
@@ -119,7 +98,5 @@ fn save_enemies() {
     let writer = std::fs::File::create("./data/enemies_ex.json").unwrap();
     let mut serializer = serde_json::Serializer::pretty(writer);
 
-    (&enemies)
-        .serialize(&mut serializer)
-        .expect("failed to write example enemy data");
+    (&enemies).serialize(&mut serializer).expect("failed to write example enemy data");
 }

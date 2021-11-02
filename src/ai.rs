@@ -38,8 +38,7 @@ impl<'a> System<'a> for AiMoveToPlayerSystem {
 
     fn run(&mut self, (ais, positions, players, mut movements): Self::SystemData) {
         for (_ai, position, movement) in (&ais, &positions, &mut movements).join() {
-            match AiMoveToPlayerSystem::find_nearest_player_position(position, &players, &positions)
-            {
+            match AiMoveToPlayerSystem::find_nearest_player_position(position, &players, &positions) {
                 Some(target_position) => {
                     let (move_x, move_y) = Position::delta(position, &target_position);
                     movement.add_movement_input(move_x, move_y);

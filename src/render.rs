@@ -37,9 +37,7 @@ pub struct RenderSystem<'a> {
 
 impl<'a> RenderSystem<'a> {
     pub fn new(with_context: &'a mut rltk::Rltk) -> Self {
-        Self {
-            context: with_context,
-        }
+        Self { context: with_context }
     }
 }
 
@@ -48,10 +46,7 @@ impl<'a> System<'a> for RenderSystem<'_> {
 
     fn run(&mut self, (positions, renderables): Self::SystemData) {
         for zorder in 0..2 {
-            for m in (&positions, &renderables)
-                .join()
-                .filter(|a| a.1.zorder == zorder)
-            {
+            for m in (&positions, &renderables).join().filter(|a| a.1.zorder == zorder) {
                 let position = &m.0;
                 let renderable = &m.1;
 

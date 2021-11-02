@@ -8,9 +8,7 @@ pub struct PlayerInputSystem<'a> {
 
 impl<'a> PlayerInputSystem<'a> {
     pub fn new(with_context: &'a rltk::Rltk) -> Self {
-        Self {
-            context: with_context,
-        }
+        Self { context: with_context }
     }
 
     fn process_text_input(player_text_input: &mut PlayerTextInputComponent, key: VirtualKeyCode) {
@@ -68,10 +66,7 @@ impl<'a> System<'a> for PlayerInputSystem<'_> {
         WriteStorage<'a, PlayerTextInputComponent>,
     );
 
-    fn run(
-        &mut self,
-        (input_mappings, mut player_inputs, mut player_text_inputs): Self::SystemData,
-    ) {
+    fn run(&mut self, (input_mappings, mut player_inputs, mut player_text_inputs): Self::SystemData) {
         for (input_mapping, player_input) in (&input_mappings, &mut player_inputs).join() {
             player_input.clear();
             match self.context.key {

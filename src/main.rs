@@ -24,13 +24,8 @@ pub struct State {
 
 pub enum StateAction {
     None,
-    DeleteEntities {
-        entities: Vec<Entity>,
-    },
-    ChangeRoom {
-        direction: room::ExitDirection,
-        to_room: i32,
-    },
+    DeleteEntities { entities: Vec<Entity> },
+    ChangeRoom { direction: room::ExitDirection, to_room: i32 },
     Quit,
     DebugSave,
     DebugLoad,
@@ -105,12 +100,7 @@ impl State {
         room::change_room(&mut self.world, self.room, old_room);
 
         // adjust player position if needed
-        for (_player, position) in (
-            &self.world.read_storage::<Player>(),
-            &mut self.world.write_storage::<Position>(),
-        )
-            .join()
-        {
+        for (_player, position) in (&self.world.read_storage::<Player>(), &mut self.world.write_storage::<Position>()).join() {
             match direction {
                 room::ExitDirection::North => {
                     position.y = 17;
@@ -133,9 +123,7 @@ impl State {
         match action {
             StateAction::DeleteEntities { entities } => {
                 for entity in entities {
-                    self.world
-                        .delete_entity(entity)
-                        .expect("Failed to delete an entity!");
+                    self.world.delete_entity(entity).expect("Failed to delete an entity!");
                 }
             }
             StateAction::ChangeRoom { direction, to_room } => {

@@ -2,8 +2,8 @@ use specs::prelude::*;
 
 use crate::components::*;
 use crate::render::Renderable;
-use crate::StateAction;
 use crate::textinput::*;
+use crate::StateAction;
 
 pub struct DynamicMarker;
 
@@ -57,8 +57,7 @@ impl<'a> System<'a> for MovementSystem {
 
             let (tentative_x, tentative_y) = (position.x + delta_x, position.y + delta_y);
             if (blockers.contains(&(tentative_x, tentative_y)) == false
-                || (blockers.contains(&(tentative_x, tentative_y))
-                    && free_blockers.contains(&(tentative_x, tentative_y))))
+                || (blockers.contains(&(tentative_x, tentative_y)) && free_blockers.contains(&(tentative_x, tentative_y))))
                 && new_blockers.contains(&(tentative_x, tentative_y)) == false
             {
                 new_blockers.push((tentative_x, tentative_y));
@@ -85,17 +84,12 @@ pub struct ApplyPlayerMovementInputSystem {
 
 impl ApplyPlayerMovementInputSystem {
     pub fn new() -> Self {
-        Self {
-            player_moved: false,
-        }
+        Self { player_moved: false }
     }
 }
 
 impl<'a> System<'a> for ApplyPlayerMovementInputSystem {
-    type SystemData = (
-        ReadStorage<'a, PlayerInputComponent>,
-        WriteStorage<'a, Movement>,
-    );
+    type SystemData = (ReadStorage<'a, PlayerInputComponent>, WriteStorage<'a, Movement>);
 
     fn run(&mut self, (player_inputs, mut movements): Self::SystemData) {
         self.player_moved = false;
@@ -168,13 +162,9 @@ impl PlayerTextCommandSystem {
         }
     }
 
-    fn process_text_input<'a>(
-        &mut self,
-        text_command: &String,
-        descriptions: &ReadStorage<'a, Description>,
-    ) -> Option<String> {
+    fn process_text_input<'a>(&mut self, text_command: &String, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
         match parse_input(text_command) {
-            TextCommand::Some {command, arg} => match command.as_str() {
+            TextCommand::Some { command, arg } => match command.as_str() {
                 "look" => self.process_look(arg, descriptions),
                 "use" => self.process_use(arg),
                 "quit" => self.process_quit(),
@@ -184,24 +174,14 @@ impl PlayerTextCommandSystem {
         }
     }
 
-    fn process_look<'a>(
-        &self,
-        look_at_target_name: Option<String>,
-        descriptions: &ReadStorage<'a, Description>,
-    ) -> Option<String> {
+    fn process_look<'a>(&self, look_at_target_name: Option<String>, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
         match look_at_target_name {
-            Some(target_name) => {
-                self.process_look_target(target_name.as_str(), descriptions)
-            }
+            Some(target_name) => self.process_look_target(target_name.as_str(), descriptions),
             _ => self.process_look_room(),
         }
     }
 
-    fn process_look_target<'a>(
-        &self,
-        _target_name: &str,
-        descriptions: &ReadStorage<'a, Description>,
-    ) -> Option<String> {
+    fn process_look_target<'a>(&self, _target_name: &str, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
         for description in (descriptions).join() {
             if description.input_name == _target_name {
                 return Some(description.description.clone());
@@ -264,19 +244,9 @@ impl<'a> System<'a> for PlayerTextCommandSystem {
         ReadStorage<'a, DebugHudComponent>,
     );
 
-    fn run(
-        &mut self,
-        (entities, players, mut text_inputs, mut active_descriptions, descriptions, debugs) : Self::SystemData,
-    ) {
+    fn run(&mut self, (entities, players, mut text_inputs, mut active_descriptions, descriptions, debugs): Self::SystemData) {
         self.state_action = StateAction::None;
-        for (entity, _player, text_input, description) in (
-            &entities,
-            &players,
-            &mut text_inputs,
-            &mut active_descriptions,
-        )
-            .join()
-        {
+        for (entity, _player, text_input, description) in (&entities, &players, &mut text_inputs, &mut active_descriptions).join() {
             match text_input.consume() {
                 Some(text_command) => {
                     match self.process_text_input(&text_command, &descriptions) {

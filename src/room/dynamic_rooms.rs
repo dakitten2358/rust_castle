@@ -44,7 +44,7 @@ pub struct DynamicRoomData {
 pub enum DynamicActionData {
     GiveItem { item: String },
     AddFlag { flag: String },
-    UpdateMap { x: i32, y: i32, }
+    UpdateMap { x: i32, y: i32 },
 }
 
 impl DynamicRoomData {
@@ -62,8 +62,7 @@ pub fn load_dynamic_rooms(world: &mut World) {
     setup_dynamic_room_data_example();
 
     let f = File::open("data/dynrooms.json").expect("data not found");
-    let loaded_rooms: Vec<DynamicRoomData> =
-        serde_json::from_reader(f).expect("failed to deserializer!");
+    let loaded_rooms: Vec<DynamicRoomData> = serde_json::from_reader(f).expect("failed to deserializer!");
 
     let mut rooms = Vec::new();
     for room in 0..83 {
@@ -102,9 +101,7 @@ pub fn update_dynamic_room(world: &mut World, room: i32) {
     }
 
     let combat_stats = world.read_storage::<CombatStats>();
-    for (combat_stat, description, position, _room) in
-        (&combat_stats, &descriptions, &positions, &room_ownership).join()
-    {
+    for (combat_stat, description, position, _room) in (&combat_stats, &descriptions, &positions, &room_ownership).join() {
         let e = DynamicEnemy {
             name: description.input_name.clone(),
             health: Some(combat_stat.health),
@@ -152,14 +149,7 @@ pub fn create_dynamic_room_entities(world: &mut World, room: i32) {
     for enemy in &room_data.enemies {
         let enemy_name = enemy.name.as_str();
         let health = enemy.health;
-        crate::enemies::create_enemy(
-            world,
-            room,
-            enemy_name,
-            enemy.position.x,
-            enemy.position.y,
-            health,
-        );
+        crate::enemies::create_enemy(world, room, enemy_name, enemy.position.x, enemy.position.y, health);
     }
 }
 
@@ -174,18 +164,16 @@ fn create_description(world: &mut World, room: i32, word: &str, description: &st
 
 fn setup_dynamic_room_data_example() {
     let mut rooms = Vec::new();
-    let room = DynamicRoomData { 
+    let room = DynamicRoomData {
         room: 1,
         items: Vec::new(),
         descriptions: Vec::new(),
-        enemies: Vec::new(), 
+        enemies: Vec::new(),
     };
     rooms.push(room);
 
     let writer = std::fs::File::create("./data/dynrooms_ex.json").unwrap();
     let mut serializer = serde_json::Serializer::pretty(writer);
 
-    (&rooms)
-        .serialize(&mut serializer)
-        .expect("failed to save example rooms");
+    (&rooms).serialize(&mut serializer).expect("failed to save example rooms");
 }
