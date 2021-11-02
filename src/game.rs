@@ -3,7 +3,7 @@ use specs::prelude::*;
 use crate::components::*;
 use crate::render::Renderable;
 use crate::StateAction;
-use itertools::Itertools;
+use crate::textinput::*;
 
 pub struct DynamicMarker;
 
@@ -173,29 +173,25 @@ impl PlayerTextCommandSystem {
         text_command: &String,
         descriptions: &ReadStorage<'a, Description>,
     ) -> Option<String> {
-        let mut tokens = text_command.split_whitespace();
-        let first_token = tokens.next();
-        let args_string = tokens.format(" ").to_string();
-        let args = args_string.as_str();
-        match first_token {
-            Some(token) => match token {
-                "look" => self.process_look(args, descriptions),
-                "use" => self.process_use(args),
+        match parse_input(text_command) {
+            TextCommand::Some {command, arg} => match command.as_str() {
+                "look" => self.process_look(arg, descriptions),
+                "use" => self.process_use(arg),
                 "quit" => self.process_quit(),
                 _ => None,
             },
-            None => None,
+            TextCommand::None => None,
         }
     }
 
     fn process_look<'a>(
         &self,
-        look_at_target_name: &str,
+        look_at_target_name: Option<String>,
         descriptions: &ReadStorage<'a, Description>,
     ) -> Option<String> {
         match look_at_target_name {
-            target_name if target_name.len() > 0 => {
-                self.process_look_target(target_name, descriptions)
+            Some(target_name) => {
+                self.process_look_target(target_name.as_str(), descriptions)
             }
             _ => self.process_look_room(),
         }
@@ -221,7 +217,7 @@ impl PlayerTextCommandSystem {
         return Some("look at room with long description here".to_string());
     }
 
-    fn process_use(&self, _use_target_name: &str) -> Option<String> {
+    fn process_use(&self, _use_target_name: Option<String>) -> Option<String> {
         return Some("use item".to_string());
     }
 

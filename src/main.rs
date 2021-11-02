@@ -13,6 +13,7 @@ mod inventory;
 mod items;
 mod render;
 mod room;
+mod textinput;
 
 use crate::components::*;
 
