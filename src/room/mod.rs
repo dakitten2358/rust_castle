@@ -99,6 +99,11 @@ impl ExitTrigger {
     }
 }
 
+pub struct RoomRedirection {
+    original_room: i32,
+    new_room: i32,
+}
+
 pub fn change_room(world: &mut World, new_room: i32, old_room: i32) {
     // save dynamics in old room
     if old_room >= 0 {
@@ -110,10 +115,21 @@ pub fn change_room(world: &mut World, new_room: i32, old_room: i32) {
     for old_entity in old_entities {
         world.delete_entity(old_entity).expect("Unable to delete entity");
     }
+
     // set up the new room
-    let room_data = get_room_data(world, new_room);
+    let redirected_room = get_redirected_room_id(&world.fetch::<Vec<RoomRedirection>>(), new_room);
+    let room_data = get_room_data(world, redirected_room);
     create_room_entities(world, new_room, &room_data);
     create_dynamic_room_entities(world, new_room);
+}
+
+fn get_redirected_room_id(room_redirections: &Vec<RoomRedirection>, room: i32) -> i32 {
+    for room_redirection in room_redirections {
+        if room_redirection.original_room == room {
+            return room_redirection.new_room;
+        }
+    }
+    return room;
 }
 
 fn find_entities_to_remove(world: &mut World, old_room: i32) -> Vec<Entity> {
@@ -285,6 +301,9 @@ pub fn load_rooms(world: &mut World) {
     }
 
     world.insert(rooms);
+
+    let room_redirections: Vec<RoomRedirection> = Vec::new();
+    world.insert(room_redirections);
 }
 
 fn get_tile_data_from_ascii_char(ascii_char: u8) -> TileData {
