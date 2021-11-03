@@ -26,6 +26,7 @@ pub enum StateAction {
     None,
     DeleteEntities { entities: Vec<Entity> },
     ChangeRoom { direction: room::ExitDirection, to_room: i32 },
+    RedirectRoom { original_room: i32, new_room: i32 },
     Quit,
     DebugSave,
     DebugLoad,
@@ -119,6 +120,12 @@ impl State {
         }
     }
 
+    fn redirect_room(&mut self, original_room: i32, new_room: i32) {
+        // add a redirection then reload the room, no need to adjust the player position
+        room::add_room_redirection(&mut self.world, original_room, new_room);
+        room::change_room(&mut self.world, original_room, original_room);
+    }
+
     fn handle_state_action(&mut self, action: StateAction) {
         match action {
             StateAction::DeleteEntities { entities } => {
@@ -128,6 +135,9 @@ impl State {
             }
             StateAction::ChangeRoom { direction, to_room } => {
                 self.change_room(to_room, direction);
+            }
+            StateAction::RedirectRoom { original_room, new_room } => {
+                self.redirect_room(original_room, new_room);
             }
             StateAction::Quit => {
                 std::process::exit(0);

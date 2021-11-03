@@ -117,19 +117,28 @@ pub fn change_room(world: &mut World, new_room: i32, old_room: i32) {
     }
 
     // set up the new room
-    let redirected_room = get_redirected_room_id(&world.fetch::<Vec<RoomRedirection>>(), new_room);
+    let redirected_room = find_redirected_room(&world.fetch::<Vec<RoomRedirection>>(), new_room);
     let room_data = get_room_data(world, redirected_room);
     create_room_entities(world, new_room, &room_data);
     create_dynamic_room_entities(world, new_room);
 }
 
-fn get_redirected_room_id(room_redirections: &Vec<RoomRedirection>, room: i32) -> i32 {
+fn find_redirected_room(room_redirections: &Vec<RoomRedirection>, room: i32) -> i32 {
     for room_redirection in room_redirections {
         if room_redirection.original_room == room {
             return room_redirection.new_room;
         }
     }
     return room;
+}
+
+pub fn add_room_redirection(world: &mut World, original_room: i32, new_room: i32) {
+    if let Some(room_redirections) = world.get_mut::<Vec<RoomRedirection>>() {
+        room_redirections.push(RoomRedirection {
+            original_room: original_room,
+            new_room: new_room,
+        });
+    }
 }
 
 fn find_entities_to_remove(world: &mut World, old_room: i32) -> Vec<Entity> {
