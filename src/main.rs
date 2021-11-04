@@ -123,7 +123,10 @@ impl State {
     fn redirect_room(&mut self, original_room: i32, new_room: i32) {
         // add a redirection then reload the room, no need to adjust the player position
         room::add_room_redirection(&mut self.world, original_room, new_room);
-        room::change_room(&mut self.world, original_room, original_room);
+
+        if self.room == original_room {
+            room::change_room(&mut self.world, original_room, original_room);
+        }
     }
 
     fn handle_state_action(&mut self, action: StateAction) {
