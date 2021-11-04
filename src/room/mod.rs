@@ -116,7 +116,8 @@ pub fn change_room(world: &mut World, new_room: i32, old_room: i32) {
         world.delete_entity(old_entity).expect("Unable to delete entity");
     }
 
-    // set up the new room
+    // set up the new room; we only use the new room for the map data; all dynamic stuff
+    // continues to use the actual room
     let redirected_room = find_redirected_room(&world.fetch::<Vec<RoomRedirection>>(), new_room);
     let room_data = get_room_data(world, redirected_room);
     create_room_entities(world, new_room, &room_data);

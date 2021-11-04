@@ -213,6 +213,7 @@ impl PlayerTextCommandSystem {
                 "go" => self.process_debug_go(tokens.next()),
                 "dsave" => self.state_action = StateAction::DebugSave,
                 "dload" => self.state_action = StateAction::DebugLoad,
+                "redirect" => self.state_action = self.process_debug_redirect(tokens.next(), tokens.next()),
                 _ => {}
             },
             None => {}
@@ -231,6 +232,19 @@ impl PlayerTextCommandSystem {
             }
             _ => {}
         }
+    }
+
+    fn process_debug_redirect(&mut self, original_room_text: Option<&str>, new_room_text: Option<&str>) -> StateAction {
+        if let Some(original_room) = original_room_text {
+            if let Some(new_room) = new_room_text {
+                return StateAction::RedirectRoom {
+                    original_room: original_room.parse::<i32>().unwrap(),
+                    new_room: new_room.parse::<i32>().unwrap(),
+                };
+            }
+        }
+
+        return StateAction::None;
     }
 }
 
