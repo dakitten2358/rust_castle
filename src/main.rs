@@ -22,6 +22,7 @@ pub struct State {
     room: i32,
 }
 
+#[derive(Clone)]
 pub enum StateAction {
     None,
     DeleteEntities { entities: Vec<Entity> },
@@ -52,14 +53,14 @@ impl State {
 
         let mut player_commands = game::PlayerTextCommandSystem::new();
         player_commands.run_now(&self.world);
-        self.handle_state_action(player_commands.state_action);
+        self.handle_pending_state_actions();
 
         let mut movement_system = game::MovementSystem::new();
         movement_system.run_now(&self.world);
 
         let mut pickups = inventory::PickupTriggerSystem::new();
         pickups.run_now(&self.world);
-        self.handle_state_action(pickups.state_action);
+        self.handle_pending_state_actions();
 
         if apply_player_movement_input.player_moved {
             let mut melee_system = combat::MeleeCombatSystem {};
@@ -70,13 +71,13 @@ impl State {
 
             let mut dead_system = combat::ClearDeadSystem::new();
             dead_system.run_now(&self.world);
-            self.handle_state_action(dead_system.state_action);
+            self.handle_pending_state_actions();
 
             let mut exit_trigger_system = game::ExitTriggerSystem::new();
             exit_trigger_system.run_now(&self.world);
-            self.handle_state_action(exit_trigger_system.state_action);
+            self.handle_pending_state_actions();
         }
-
+        
         self.world.maintain();
     }
 
@@ -129,6 +130,19 @@ impl State {
         }
     }
 
+    fn handle_pending_state_actions<'a>(&mut self) {
+        let pending_actions = self.world.get_mut::<Vec<StateAction>>().unwrap().clone();
+        for state_action in pending_actions {
+            self.handle_state_action(state_action);
+        }
+        self.reset_pending_actions();
+    }
+
+    fn reset_pending_actions(&mut self) {
+        let pending_actions = self.world.get_mut::<Vec<StateAction>>().unwrap();
+        pending_actions.clear();
+    }
+
     fn handle_state_action(&mut self, action: StateAction) {
         match action {
             StateAction::DeleteEntities { entities } => {
@@ -174,6 +188,10 @@ fn main() -> rltk::BError {
         world: World::new(),
         room: 0,
     };
+
+    // systems can dump stuff in here to be dealt with
+    let pending_actions: Vec<StateAction> = Vec::new();
+    game_state.world.insert(pending_actions);
 
     // register types
     register_markers(&mut game_state.world);

@@ -114,9 +114,7 @@ impl<'a> System<'a> for ApplyPlayerMovementInputSystem {
     }
 }
 
-pub struct ExitTriggerSystem {
-    pub state_action: StateAction,
-}
+pub struct ExitTriggerSystem {}
 
 impl<'a> System<'a> for ExitTriggerSystem {
     type SystemData = (
@@ -124,17 +122,18 @@ impl<'a> System<'a> for ExitTriggerSystem {
         ReadStorage<'a, Position>,
         ReadStorage<'a, Movement>,
         ReadStorage<'a, crate::room::ExitTrigger>,
+        WriteExpect<'a, Vec<StateAction>>,
     );
 
-    fn run(&mut self, (players, positions, movements, exit_triggers): Self::SystemData) {
+    fn run(&mut self, (players, positions, movements, exit_triggers, mut state_actions): Self::SystemData) {
         for (_player, movement, position) in (&players, &movements, &positions).join() {
             if movement.did_move() {
                 for (exit_trigger, exit_position) in (&exit_triggers, &positions).join() {
                     if position == exit_position {
-                        self.state_action = StateAction::ChangeRoom {
+                        state_actions.push( StateAction::ChangeRoom {
                             direction: exit_trigger.from_direction,
                             to_room: exit_trigger.to_room,
-                        };
+                        });
                         return;
                     }
                 }
@@ -145,29 +144,23 @@ impl<'a> System<'a> for ExitTriggerSystem {
 
 impl ExitTriggerSystem {
     pub fn new() -> Self {
-        Self {
-            state_action: StateAction::None,
-        }
+        Self {}
     }
 }
 
-pub struct PlayerTextCommandSystem {
-    pub state_action: StateAction,
-}
+pub struct PlayerTextCommandSystem {}
 
 impl PlayerTextCommandSystem {
     pub fn new() -> Self {
-        Self {
-            state_action: StateAction::None,
-        }
+        Self {}
     }
 
-    fn process_text_input<'a>(&mut self, text_command: &String, descriptions: &ReadStorage<'a, Description>) -> Option<String> {
+    fn process_text_input<'a>(&mut self, text_command: &String, descriptions: &ReadStorage<'a, Description>, state_actions: &mut Vec<StateAction>) -> Option<String> {
         match parse_input(text_command) {
             TextCommand::Some { command, arg } => match command.as_str() {
                 "look" => self.process_look(arg, descriptions),
                 "use" => self.process_use(arg),
-                "quit" => self.process_quit(),
+                "quit" => self.process_quit(state_actions),
                 _ => None,
             },
             TextCommand::None => None,
@@ -201,30 +194,30 @@ impl PlayerTextCommandSystem {
         return Some("use item".to_string());
     }
 
-    fn process_quit(&mut self) -> Option<String> {
-        self.state_action = StateAction::Quit;
+    fn process_quit(&mut self, state_actions: &mut Vec<StateAction>) -> Option<String> {
+        state_actions.push(StateAction::Quit);
         None
     }
 
-    fn process_debug_input(&mut self, text_command: &String) {
+    fn process_debug_input(&mut self, text_command: &String, state_actions: &mut Vec<StateAction>) {
         let mut tokens = text_command.split_whitespace();
         match tokens.next() {
             Some(token) => match token {
-                "go" => self.process_debug_go(tokens.next()),
-                "dsave" => self.state_action = StateAction::DebugSave,
-                "dload" => self.state_action = StateAction::DebugLoad,
-                "redirect" => self.state_action = self.process_debug_redirect(tokens.next(), tokens.next()),
+                "go" => state_actions.push(self.process_debug_go(tokens.next())),
+                "dsave" => state_actions.push(StateAction::DebugSave),
+                "dload" => state_actions.push(StateAction::DebugLoad),
+                "redirect" => state_actions.push(self.process_debug_redirect(tokens.next(), tokens.next())),
                 _ => {}
             },
             None => {}
         }
     }
 
-    fn process_debug_go(&mut self, to_room_text: Option<&str>) {
+    fn process_debug_go(&mut self, to_room_text: Option<&str>) -> StateAction {
         match to_room_text {
             Some(to_room_str) => {
                 if let Ok(to_room) = to_room_str.parse::<i32>() {
-                    self.state_action = StateAction::ChangeRoom {
+                    return StateAction::ChangeRoom {
                         direction: crate::room::ExitDirection::Invalid,
                         to_room: to_room,
                     };
@@ -232,6 +225,7 @@ impl PlayerTextCommandSystem {
             }
             _ => {}
         }
+        return StateAction::None;
     }
 
     fn process_debug_redirect(&mut self, original_room_text: Option<&str>, new_room_text: Option<&str>) -> StateAction {
@@ -256,20 +250,20 @@ impl<'a> System<'a> for PlayerTextCommandSystem {
         WriteStorage<'a, ActiveDescriptionComponent>,
         ReadStorage<'a, Description>,
         ReadStorage<'a, DebugHudComponent>,
+        WriteExpect<'a, Vec<StateAction>>,
     );
 
-    fn run(&mut self, (entities, players, mut text_inputs, mut active_descriptions, descriptions, debugs): Self::SystemData) {
-        self.state_action = StateAction::None;
+    fn run(&mut self, (entities, players, mut text_inputs, mut active_descriptions, descriptions, debugs, mut _state_actions): Self::SystemData) {
         for (entity, _player, text_input, description) in (&entities, &players, &mut text_inputs, &mut active_descriptions).join() {
             match text_input.consume() {
                 Some(text_command) => {
-                    match self.process_text_input(&text_command, &descriptions) {
+                    match self.process_text_input(&text_command, &descriptions, &mut _state_actions) {
                         Some(result) => description.set(result.as_str()),
                         None => description.set("i don't understand"),
                     }
 
                     if let Some(_debug) = debugs.get(entity) {
-                        self.process_debug_input(&text_command);
+                        self.process_debug_input(&text_command, &mut _state_actions);
                     }
                 }
                 None => {}

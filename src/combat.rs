@@ -136,30 +136,26 @@ impl<'a> System<'a> for MeleeCombatSystem {
     }
 }
 
-pub struct ClearDeadSystem {
-    pub state_action: StateAction,
-}
+pub struct ClearDeadSystem {}
 
 impl ClearDeadSystem {
     pub fn new() -> Self {
-        Self {
-            state_action: StateAction::None,
-        }
+        Self {}
     }
 }
 
 impl<'a> System<'a> for ClearDeadSystem {
-    type SystemData = (Entities<'a>, ReadStorage<'a, DeadTag>);
+    type SystemData = (Entities<'a>, ReadStorage<'a, DeadTag>, WriteExpect<'a, Vec<StateAction>>,);
 
-    fn run(&mut self, (entities, dead_tags): Self::SystemData) {
+    fn run(&mut self, (entities, dead_tags, mut state_actions): Self::SystemData) {
         let mut entities_to_delete = Vec::new();
 
         for (entity, _dead_tag) in (&entities, &dead_tags).join() {
             entities_to_delete.push(entity);
         }
 
-        self.state_action = StateAction::DeleteEntities {
+        state_actions.push(StateAction::DeleteEntities {
             entities: entities_to_delete,
-        };
+        });
     }
 }

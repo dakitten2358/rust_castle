@@ -3,9 +3,7 @@ use specs::prelude::*;
 use crate::components::{InventoryComponent, Movement, PickupTrigger, Player, Position};
 use crate::StateAction;
 
-pub struct PickupTriggerSystem {
-    pub state_action: StateAction,
-}
+pub struct PickupTriggerSystem {}
 
 impl<'a> System<'a> for PickupTriggerSystem {
     type SystemData = (
@@ -15,9 +13,10 @@ impl<'a> System<'a> for PickupTriggerSystem {
         ReadStorage<'a, Movement>,
         ReadStorage<'a, PickupTrigger>,
         WriteStorage<'a, InventoryComponent>,
+        WriteExpect<'a, Vec<StateAction>>,
     );
 
-    fn run(&mut self, (entities, players, positions, movements, pickup_triggers, mut inventories): Self::SystemData) {
+    fn run(&mut self, (entities, players, positions, movements, pickup_triggers, mut inventories, mut state_actions): Self::SystemData) {
         let mut picked_up_items: Vec<Entity> = Vec::new();
         {
             for (_player, movement, position, inventory) in (&players, &movements, &positions, &mut inventories).join() {
@@ -33,16 +32,14 @@ impl<'a> System<'a> for PickupTriggerSystem {
             }
         }
 
-        self.state_action = StateAction::DeleteEntities {
+        state_actions.push(StateAction::DeleteEntities {
             entities: picked_up_items.clone(),
-        };
+        });
     }
 }
 
 impl PickupTriggerSystem {
     pub fn new() -> Self {
-        Self {
-            state_action: StateAction::None,
-        }
+        Self {}
     }
 }
