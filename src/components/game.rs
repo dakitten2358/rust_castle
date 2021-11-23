@@ -168,4 +168,7 @@ impl InventoryComponent {
     pub fn add(&mut self, item: ItemFlags) {
         self.items |= item;
     }
+    pub fn has(&self, item: ItemFlags) -> bool {
+        (self.items & item) == item
+    }
 }
