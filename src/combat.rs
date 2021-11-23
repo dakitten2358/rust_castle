@@ -145,7 +145,7 @@ impl ClearDeadSystem {
 }
 
 impl<'a> System<'a> for ClearDeadSystem {
-    type SystemData = (Entities<'a>, ReadStorage<'a, DeadTag>, WriteExpect<'a, Vec<StateAction>>,);
+    type SystemData = (Entities<'a>, ReadStorage<'a, DeadTag>, WriteExpect<'a, Vec<StateAction>>);
 
     fn run(&mut self, (entities, dead_tags, mut state_actions): Self::SystemData) {
         let mut entities_to_delete = Vec::new();

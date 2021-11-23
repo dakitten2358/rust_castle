@@ -132,7 +132,7 @@ impl<'a> System<'a> for ExitTriggerSystem {
             if movement.did_move() {
                 for (exit_trigger, exit_position) in (&exit_triggers, &positions).join() {
                     if position == exit_position {
-                        state_actions.push( StateAction::ChangeRoom {
+                        state_actions.push(StateAction::ChangeRoom {
                             direction: exit_trigger.from_direction,
                             to_room: exit_trigger.to_room,
                         });
@@ -157,7 +157,12 @@ impl PlayerTextCommandSystem {
         Self {}
     }
 
-    fn process_text_input<'a>(&mut self, text_command: &String, descriptions: &ReadStorage<'a, Description>, state_actions: &mut Vec<StateAction>) -> Option<String> {
+    fn process_text_input<'a>(
+        &mut self,
+        text_command: &String,
+        descriptions: &ReadStorage<'a, Description>,
+        state_actions: &mut Vec<StateAction>,
+    ) -> Option<String> {
         match parse_input(text_command) {
             TextCommand::Some { command, arg } => match command.as_str() {
                 "look" => self.process_look(arg, descriptions),
@@ -255,7 +260,10 @@ impl<'a> System<'a> for PlayerTextCommandSystem {
         WriteExpect<'a, Vec<StateAction>>,
     );
 
-    fn run(&mut self, (entities, players, mut text_inputs, mut active_descriptions, descriptions, debugs, mut _state_actions): Self::SystemData) {
+    fn run(
+        &mut self,
+        (entities, players, mut text_inputs, mut active_descriptions, descriptions, debugs, mut _state_actions): Self::SystemData,
+    ) {
         for (entity, _player, text_input, description) in (&entities, &players, &mut text_inputs, &mut active_descriptions).join() {
             match text_input.consume() {
                 Some(text_command) => {
