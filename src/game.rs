@@ -7,6 +7,8 @@ use crate::StateAction;
 
 pub struct DynamicMarker;
 
+pub struct CurrentRoom(pub i32);
+
 pub fn create_player_entity(world: &mut World) {
     world
         .create_entity()

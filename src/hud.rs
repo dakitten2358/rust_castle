@@ -1,6 +1,7 @@
 use specs::prelude::*;
 
 use crate::components::*;
+use crate::game::CurrentRoom;
 use crate::render::Renderable;
 use crate::room::RoomData;
 
@@ -8,7 +9,6 @@ use crate::room::RoomData;
 pub struct HudSystem<'a> {
     context: &'a mut rltk::Rltk,
     state: &'a crate::State,
-    room: i32,
 }
 
 // 10 lines for on screen items
@@ -16,11 +16,10 @@ pub struct HudSystem<'a> {
 // 5 lines for log
 
 impl<'a> HudSystem<'a> {
-    pub fn new(state: &'a crate::State, with_context: &'a mut rltk::Rltk, room: i32) -> Self {
+    pub fn new(state: &'a crate::State, with_context: &'a mut rltk::Rltk) -> Self {
         Self {
             context: with_context,
             state: state,
-            room: room,
         }
     }
 
@@ -111,6 +110,7 @@ fn draw_border_piece(context: &mut rltk::Rltk, x: i32, y: i32, glyph: char) {
 
 impl<'a> System<'a> for HudSystem<'a> {
     type SystemData = (
+        ReadExpect<'a, CurrentRoom>,
         ReadStorage<'a, Player>,
         ReadStorage<'a, PlayerTextInputComponent>,
         ReadStorage<'a, ActiveDescriptionComponent>,
@@ -122,11 +122,12 @@ impl<'a> System<'a> for HudSystem<'a> {
 
     fn run(
         &mut self,
-        (_players, player_text_inputs, active_descriptions, room_datas, combat_logs, renderables, descriptions): Self::SystemData,
+        (current_room, _players, player_text_inputs, active_descriptions, room_datas, combat_logs, renderables, descriptions): Self::SystemData,
     ) {
         self.draw_map_border();
 
-        let room_data = &room_datas[self.room as usize];
+        let room_index: i32 = (*current_room).0;
+        let room_data = &room_datas[room_index as usize];
         self.print_description(room_data);
 
         for player_input in player_text_inputs.join() {
@@ -149,31 +150,32 @@ impl<'a> System<'a> for HudSystem<'a> {
 pub struct DebugHudSystem<'a> {
     context: &'a mut rltk::Rltk,
     state: &'a crate::State,
-    room: i32,
 }
 
 impl<'a> DebugHudSystem<'a> {
-    pub fn new(state: &'a crate::State, with_context: &'a mut rltk::Rltk, room: i32) -> Self {
+    pub fn new(state: &'a crate::State, with_context: &'a mut rltk::Rltk) -> Self {
         Self {
             context: with_context,
             state: state,
-            room: room,
         }
     }
 }
 
 impl<'a> System<'a> for DebugHudSystem<'_> {
     type SystemData = (
+        ReadExpect<'a, CurrentRoom>,
         ReadStorage<'a, Player>,
         ReadStorage<'a, DebugHudComponent>,
         ReadExpect<'a, Vec<RoomData>>,
         ReadStorage<'a, CombatStats>,
     );
 
-    fn run(&mut self, (players, debug_huds, _room_datas, combat_stats): Self::SystemData) {
+    fn run(&mut self, (current_room, players, debug_huds, _room_datas, combat_stats): Self::SystemData) {
+        let room = (*current_room).0;
+
         // debug
         for (_player, _debug) in (&players, &debug_huds).join() {
-            self.context.print(37, 24, self.room.to_string());
+            self.context.print(37, 24, room.to_string());
         }
 
         for (_player, _debug, combat_stat) in (&players, &debug_huds, &combat_stats).join() {

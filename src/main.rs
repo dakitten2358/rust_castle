@@ -16,10 +16,10 @@ mod room;
 mod textinput;
 
 use crate::components::*;
+use crate::game::CurrentRoom;
 
 pub struct State {
     world: World,
-    room: i32,
 }
 
 #[derive(Clone)]
@@ -77,7 +77,7 @@ impl State {
             exit_trigger_system.run_now(&self.world);
             self.handle_pending_state_actions();
         }
-        
+
         self.world.maintain();
     }
 
@@ -87,19 +87,20 @@ impl State {
     }
 
     fn draw_hud(&mut self, context: &mut Rltk) {
-        let mut hud_system = hud::HudSystem::new(&self, context, self.room);
+        let mut hud_system = hud::HudSystem::new(&self, context);
         hud_system.run_now(&self.world);
     }
 
     fn draw_debug(&mut self, context: &mut Rltk) {
-        let mut debug_hud = hud::DebugHudSystem::new(&self, context, self.room);
+        let mut debug_hud = hud::DebugHudSystem::new(&self, context);
         debug_hud.run_now(&self.world);
     }
 
     fn change_room(&mut self, to_room: i32, direction: room::ExitDirection) {
-        let old_room = self.room;
-        self.room = to_room;
-        room::change_room(&mut self.world, self.room, old_room);
+        let old_room = (*(self.world.fetch::<CurrentRoom>())).0;
+        self.world.insert(CurrentRoom(to_room));
+
+        room::change_room(&mut self.world, to_room, old_room);
 
         // adjust player position if needed
         for (_player, position) in (&self.world.read_storage::<Player>(), &mut self.world.write_storage::<Position>()).join() {
@@ -125,7 +126,8 @@ impl State {
         // add a redirection then reload the room, no need to adjust the player position
         room::add_room_redirection(&mut self.world, original_room, new_room);
 
-        if self.room == original_room {
+        let room = (*self.world.fetch::<CurrentRoom>()).0;
+        if room == original_room {
             room::change_room(&mut self.world, original_room, original_room);
         }
     }
@@ -184,14 +186,12 @@ impl GameState for State {
 fn main() -> rltk::BError {
     let context = terminal_builder(2).build()?;
 
-    let mut game_state = State {
-        world: World::new(),
-        room: 0,
-    };
+    let mut game_state = State { world: World::new() };
 
     // systems can dump stuff in here to be dealt with
     let pending_actions: Vec<StateAction> = Vec::new();
     game_state.world.insert(pending_actions);
+    game_state.world.insert(CurrentRoom(0));
 
     // register types
     register_markers(&mut game_state.world);
