@@ -168,6 +168,7 @@ impl PlayerTextCommandSystem {
     fn process_text_input<'a>(
         &mut self,
         current_room: CurrentRoom,
+        position: &Position,
         inventory: &InventoryComponent,
         text_command: &String,
         descriptions: &ReadStorage<'a, Description>,
@@ -176,7 +177,7 @@ impl PlayerTextCommandSystem {
         match parse_input(text_command) {
             TextCommand::Some { command, arg } => match command.as_str() {
                 "look" => self.process_look(arg, descriptions),
-                "use" | "wave" | "show" | "play" => self.process_use(state_actions, current_room, inventory, command, arg),
+                "use" | "wave" | "show" | "play" => self.process_use(state_actions, current_room, position, inventory, command, arg),
                 "quit" => self.process_quit(state_actions),
                 _ => None,
             },
@@ -211,6 +212,7 @@ impl PlayerTextCommandSystem {
         &self,
         state_actions: &mut Vec<StateAction>,
         current_room: CurrentRoom,
+        position: &Position,
         inventory: &InventoryComponent,
         use_command: String,
         maybe_use_target_name: Option<String>,
@@ -242,6 +244,7 @@ impl PlayerTextCommandSystem {
             "use" | "wave" => {
                 let room_index = current_room.get_room_index();
                 if room_index == 0 {
+                    state_actions.push(StateAction::Victory);
                     return Some("you win!".to_string());
                 } else {
                     return Some("nothing happens".to_string());
@@ -334,6 +337,7 @@ impl<'a> System<'a> for PlayerTextCommandSystem {
         Entities<'a>,
         ReadExpect<'a, CurrentRoom>,
         ReadStorage<'a, Player>,
+        ReadStorage<'a, Position>,
         ReadStorage<'a, InventoryComponent>,
         WriteStorage<'a, PlayerTextInputComponent>,
         WriteStorage<'a, ActiveDescriptionComponent>,
@@ -344,14 +348,39 @@ impl<'a> System<'a> for PlayerTextCommandSystem {
 
     fn run(
         &mut self,
-        (entities, current_room, players, inventories, mut text_inputs, mut active_descriptions, descriptions, debugs, mut _state_actions): Self::SystemData,
+        (
+            entities,
+            current_room,
+            players,
+            positions,
+            inventories,
+            mut text_inputs,
+            mut active_descriptions,
+            descriptions,
+            debugs,
+            mut _state_actions,
+        ): Self::SystemData,
     ) {
-        for (entity, _player, inventory, text_input, description) in
-            (&entities, &players, &inventories, &mut text_inputs, &mut active_descriptions).join()
+        for (entity, _player, position, inventory, text_input, description) in (
+            &entities,
+            &players,
+            &positions,
+            &inventories,
+            &mut text_inputs,
+            &mut active_descriptions,
+        )
+            .join()
         {
             match text_input.consume() {
                 Some(text_command) => {
-                    match self.process_text_input(*current_room, &inventory, &text_command, &descriptions, &mut _state_actions) {
+                    match self.process_text_input(
+                        *current_room,
+                        &position,
+                        &inventory,
+                        &text_command,
+                        &descriptions,
+                        &mut _state_actions,
+                    ) {
                         Some(result) => description.set(result.as_str()),
                         None => description.set("i don't understand"),
                     }

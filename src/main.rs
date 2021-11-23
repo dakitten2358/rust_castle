@@ -28,6 +28,7 @@ pub enum StateAction {
     DeleteEntities { entities: Vec<Entity> },
     ChangeRoom { direction: room::ExitDirection, to_room: i32 },
     RedirectRoom { original_room: i32, new_room: i32 },
+    Victory,
     Quit,
     DebugSave,
     DebugLoad,
@@ -157,6 +158,9 @@ impl State {
             }
             StateAction::RedirectRoom { original_room, new_room } => {
                 self.redirect_room(original_room, new_room);
+            }
+            StateAction::Victory => {
+                std::process::exit(0);
             }
             StateAction::Quit => {
                 std::process::exit(0);

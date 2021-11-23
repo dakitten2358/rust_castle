@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use specs::saveload::*;
 use std::fs::File;
+use std::io::{Read, Seek, SeekFrom};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DynamicPosition {
@@ -38,6 +39,14 @@ pub struct DynamicRoomData {
     pub items: Vec<DynamicItemData>,
     pub descriptions: Vec<DynamicDescriptionData>,
     pub enemies: Vec<DynamicEnemy>,
+    pub map: Option<DynamicMapData>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct DynamicMapData {
+    pub map: Vec<u8>,
+    pub description: Vec<String>,
+    pub exits: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -54,6 +63,7 @@ impl DynamicRoomData {
             items: Vec::new(),
             descriptions: Vec::new(),
             enemies: Vec::new(),
+            map: None,
         }
     }
 }
@@ -67,7 +77,18 @@ pub fn load_dynamic_rooms(world: &mut World) {
     let mut rooms = Vec::new();
     for room in 0..83 {
         match find_room(room, &loaded_rooms) {
-            Some(dyn_room_data) => rooms.push(dyn_room_data.clone()),
+            Some(dyn_room_data) => {
+                rooms.push(dyn_room_data.clone());
+                match &(dyn_room_data.map) {
+                    Some(map_data) => {
+                        let mut existing_rooms = world.fetch_mut::<Vec<crate::room::RoomData>>();
+                        let mut dyn_room = crate::room::RoomData::new();
+
+                        existing_rooms.push(dyn_room);
+                    }
+                    None => {}
+                }
+            }
             None => rooms.push(DynamicRoomData::empty(room)),
         }
     }
@@ -164,11 +185,32 @@ fn create_description(world: &mut World, room: i32, word: &str, description: &st
 
 fn setup_dynamic_room_data_example() {
     let mut rooms = Vec::new();
+
+    let mut map = DynamicMapData {
+        map: Vec::new(),
+        description: Vec::new(),
+        exits: "S83".to_string(),
+    };
+
+    let mut f = File::open("data/castle.ran").expect("data not found");
+    let copy_room_index = 76;
+    let _pos = f.seek(SeekFrom::Start(575 * copy_room_index));
+
+    let mut room_data_buffer: [u8; 24 * 18] = [0; 24 * 18];
+    f.read(&mut room_data_buffer).expect("failed to read");
+    for row in 0..18 {
+        for col in 0..24 {
+            let t = room_data_buffer[(row * 24) + col];
+            map.map.push(t);
+        }
+    }
+
     let room = DynamicRoomData {
         room: 1,
         items: Vec::new(),
         descriptions: Vec::new(),
         enemies: Vec::new(),
+        map: Some(map),
     };
     rooms.push(room);
 
