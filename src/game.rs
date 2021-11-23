@@ -176,7 +176,7 @@ impl PlayerTextCommandSystem {
         match parse_input(text_command) {
             TextCommand::Some { command, arg } => match command.as_str() {
                 "look" => self.process_look(arg, descriptions),
-                "use" | "wave" | "show" | "play" => self.process_use(current_room, inventory, command, arg),
+                "use" | "wave" | "show" | "play" => self.process_use(state_actions, current_room, inventory, command, arg),
                 "quit" => self.process_quit(state_actions),
                 _ => None,
             },
@@ -209,29 +209,76 @@ impl PlayerTextCommandSystem {
 
     fn process_use(
         &self,
+        state_actions: &mut Vec<StateAction>,
         current_room: CurrentRoom,
         inventory: &InventoryComponent,
         use_command: String,
         maybe_use_target_name: Option<String>,
     ) -> Option<String> {
-        let room_index = current_room.get_room_index();
         if let Some(use_target_name) = maybe_use_target_name {
             match use_target_name.as_str() {
-                "scepter" => {
-                    if inventory.has(ItemFlags::SCEPTER) {
-                        if room_index == 0 {
-                            return Some("you win!".to_string());
-                        } else {
-                            return Some("nothing happens".to_string());
-                        }
-                    } else {
-                        return Some("you don't have a scepter".to_string());
-                    }
-                }
+                "scepter" => return self.process_scepter(state_actions, current_room, inventory, use_command),
+                "wand" => return self.process_wand(state_actions, current_room, inventory, use_command),
                 _ => {}
             }
         }
         None
+    }
+
+    fn process_scepter(
+        &self,
+        state_actions: &mut Vec<StateAction>,
+        current_room: CurrentRoom,
+        inventory: &InventoryComponent,
+        use_command: String,
+    ) -> Option<String> {
+        // we need the scepter to continue
+        if inventory.has(ItemFlags::SCEPTER) == false {
+            return Some("you don't have a scepter".to_string());
+        }
+
+        // make sure we're using the right action for it
+        match use_command.as_str() {
+            "use" | "wave" => {
+                let room_index = current_room.get_room_index();
+                if room_index == 0 {
+                    return Some("you win!".to_string());
+                } else {
+                    return Some("nothing happens".to_string());
+                }
+            }
+            _ => return Some("that doesn't work".to_string()),
+        }
+    }
+
+    fn process_wand(
+        &self,
+        state_actions: &mut Vec<StateAction>,
+        current_room: CurrentRoom,
+        inventory: &InventoryComponent,
+        use_command: String,
+    ) -> Option<String> {
+        // we need the scepter to continue
+        if inventory.has(ItemFlags::MAGICWAND) == false {
+            return Some("you don't have a wand".to_string());
+        }
+
+        match use_command.as_str() {
+            "use" | "wave" => {
+                let room_index = current_room.get_room_index();
+                // winding passage w/ secret
+                if room_index == 76 {
+                    state_actions.push(StateAction::RedirectRoom {
+                        original_room: 76,
+                        new_room: 1,
+                    });
+                    return Some("a secret passage opens!".to_string());
+                } else {
+                    return Some("nothing happens".to_string());
+                }
+            }
+            _ => return Some("that doesn't work".to_string()),
+        }
     }
 
     fn process_quit(&mut self, state_actions: &mut Vec<StateAction>) -> Option<String> {
