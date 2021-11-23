@@ -126,7 +126,7 @@ impl<'a> System<'a> for HudSystem<'a> {
     ) {
         self.draw_map_border();
 
-        let room_index: i32 = (*current_room).0;
+        let room_index: i32 = (*current_room).get_room_index();
         let room_data = &room_datas[room_index as usize];
         self.print_description(room_data);
 

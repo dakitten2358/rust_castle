@@ -9,6 +9,12 @@ pub struct DynamicMarker;
 
 pub struct CurrentRoom(pub i32);
 
+impl CurrentRoom {
+    pub fn get_room_index(&self) -> i32 {
+        self.0
+    }
+}
+
 pub fn create_player_entity(world: &mut World) {
     world
         .create_entity()

@@ -97,7 +97,7 @@ impl State {
     }
 
     fn change_room(&mut self, to_room: i32, direction: room::ExitDirection) {
-        let old_room = (*(self.world.fetch::<CurrentRoom>())).0;
+        let old_room = (*(self.world.fetch::<CurrentRoom>())).get_room_index();
         self.world.insert(CurrentRoom(to_room));
 
         room::change_room(&mut self.world, to_room, old_room);
