@@ -75,7 +75,8 @@ pub fn load_dynamic_rooms(world: &mut World) {
     let loaded_rooms: Vec<DynamicRoomData> = serde_json::from_reader(f).expect("failed to deserializer!");
 
     let mut rooms = Vec::new();
-    for room in 0..83 {
+    // 83 + 2 extra = 85
+    for room in 0..85 {
         match find_room(room, &loaded_rooms) {
             Some(dyn_room_data) => {
                 rooms.push(dyn_room_data.clone());
@@ -83,6 +84,30 @@ pub fn load_dynamic_rooms(world: &mut World) {
                     Some(map_data) => {
                         let mut existing_rooms = world.fetch_mut::<Vec<crate::room::RoomData>>();
                         let mut dyn_room = crate::room::RoomData::new();
+
+                        for row in 0..18 {
+                            for col in 0..24 {
+                                let t = map_data.map[(row * 24) + col];
+
+                                // blank tile, skip it
+                                if t == 32 {
+                                    continue;
+                                };
+
+                                let mut tile_data = crate::room::get_tile_data_from_ascii_char(t);
+                                tile_data.x = col as i32;
+                                tile_data.y = row as i32;
+                                dyn_room.tiles.push(tile_data);
+                            }
+                        }
+
+                        for desc_line in &map_data.description {
+                            dyn_room.description.push((*desc_line).clone());
+                        }
+
+                        for exit in crate::room::parse_exits(map_data.exits.as_str()) {
+                            dyn_room.exits.push(exit);
+                        }
 
                         existing_rooms.push(dyn_room);
                     }
@@ -193,7 +218,7 @@ fn setup_dynamic_room_data_example() {
     };
 
     let mut f = File::open("data/castle.ran").expect("data not found");
-    let copy_room_index = 76;
+    let copy_room_index = 66;
     let _pos = f.seek(SeekFrom::Start(575 * copy_room_index));
 
     let mut room_data_buffer: [u8; 24 * 18] = [0; 24 * 18];

@@ -273,9 +273,15 @@ impl PlayerTextCommandSystem {
                 if room_index == 76 {
                     state_actions.push(StateAction::RedirectRoom {
                         original_room: 76,
-                        new_room: 1,
+                        new_room: 83,
                     });
                     return Some("a secret passage opens!".to_string());
+                } else if room_index == 66 {
+                    state_actions.push(StateAction::RedirectRoom {
+                        original_room: 66,
+                        new_room: 84,
+                    });
+                    return Some("A secret passage opens!".to_string());
                 } else {
                     return Some("nothing happens".to_string());
                 }

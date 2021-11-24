@@ -283,28 +283,8 @@ pub fn load_rooms(world: &mut World) {
         let exit_text = str::from_utf8(&room_exits_bytes).unwrap();
         println!("exits for room {} are {}", room, exit_text);
 
-        let exit_regex = Regex::new(r"(?P<direction>[A-Z])(?P<room>\d+)").unwrap();
-        for captures in exit_regex.captures_iter(exit_text) {
-            let direction_text = &captures["direction"];
-            let room_text = &captures["room"];
-
-            let direction = match direction_text {
-                "N" => ExitDirection::North,
-                "E" => ExitDirection::East,
-                "S" => ExitDirection::South,
-                "W" => ExitDirection::West,
-                "U" => ExitDirection::Up,
-                "D" => ExitDirection::Down,
-                _ => ExitDirection::Invalid,
-            };
-
-            let room_index = room_text.parse::<i32>().unwrap();
-
-            let exit_data = ExitData {
-                direction: direction,
-                to_room: room_index - 1,
-            };
-            room_data.exits.push(exit_data);
+        for exit in parse_exits(exit_text) {
+            room_data.exits.push(exit);
         }
 
         rooms.push(room_data);
@@ -316,7 +296,35 @@ pub fn load_rooms(world: &mut World) {
     world.insert(room_redirections);
 }
 
-fn get_tile_data_from_ascii_char(ascii_char: u8) -> TileData {
+pub fn parse_exits(exit_text: &str) -> Vec<ExitData> {
+    let mut exits = Vec::new();
+    let exit_regex = Regex::new(r"(?P<direction>[A-Z])(?P<room>\d+)").unwrap();
+    for captures in exit_regex.captures_iter(exit_text) {
+        let direction_text = &captures["direction"];
+        let room_text = &captures["room"];
+
+        let direction = match direction_text {
+            "N" => ExitDirection::North,
+            "E" => ExitDirection::East,
+            "S" => ExitDirection::South,
+            "W" => ExitDirection::West,
+            "U" => ExitDirection::Up,
+            "D" => ExitDirection::Down,
+            _ => ExitDirection::Invalid,
+        };
+
+        let room_index = room_text.parse::<i32>().unwrap();
+
+        let exit_data = ExitData {
+            direction: direction,
+            to_room: room_index - 1,
+        };
+        exits.push(exit_data);
+    }
+    return exits;
+}
+
+pub fn get_tile_data_from_ascii_char(ascii_char: u8) -> TileData {
     TileData {
         glyph: map_ascii_to_char(ascii_char),
         collision: map_ascii_to_collision(ascii_char),
