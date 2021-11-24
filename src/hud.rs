@@ -165,17 +165,23 @@ impl<'a> System<'a> for DebugHudSystem<'_> {
     type SystemData = (
         ReadExpect<'a, CurrentRoom>,
         ReadStorage<'a, Player>,
+        ReadStorage<'a, Position>,
         ReadStorage<'a, DebugHudComponent>,
         ReadExpect<'a, Vec<RoomData>>,
         ReadStorage<'a, CombatStats>,
     );
 
-    fn run(&mut self, (current_room, players, debug_huds, _room_datas, combat_stats): Self::SystemData) {
+    fn run(&mut self, (current_room, players, positions, debug_huds, _room_datas, combat_stats): Self::SystemData) {
         let room = (*current_room).0;
 
         // debug
         for (_player, _debug) in (&players, &debug_huds).join() {
             self.context.print(37, 24, room.to_string());
+        }
+
+        for (_player, position, _debug) in (&players, &positions, &debug_huds).join() {
+            let position_text = format!("{},{}", position.x, position.y);
+            self.context.print(28, 23, position_text);
         }
 
         for (_player, _debug, combat_stat) in (&players, &debug_huds, &combat_stats).join() {
