@@ -221,6 +221,7 @@ impl PlayerTextCommandSystem {
             match use_target_name.as_str() {
                 "scepter" => return self.process_scepter(state_actions, current_room, inventory, use_command),
                 "wand" => return self.process_wand(state_actions, current_room, inventory, use_command),
+                "cross" => return self.process_cross(state_actions, current_room, inventory, use_command),
                 _ => {}
             }
         }
@@ -287,6 +288,30 @@ impl PlayerTextCommandSystem {
                 }
             }
             _ => return Some("that doesn't work".to_string()),
+        }
+    }
+
+    fn process_cross(
+        &self,
+        state_actions: &mut Vec<StateAction>,
+        current_room: CurrentRoom,
+        inventory: &InventoryComponent,
+        use_command: String,
+    ) -> Option<String> {
+        // we need the scepter to continue
+        if inventory.has(ItemFlags::HOLYCROSS) == false {
+            return Some("you don't have a cross".to_string());
+        }
+        match use_command.as_str() {
+            "use" | "show" => {
+                let room_index = current_room.get_room_index();
+                if room_index == 27 {
+                    return Some("vampire disappears".to_string());
+                } else {
+                    return Some("nothing happens".to_string());
+                }
+            }
+            _ => return Some("nothing happens".to_string()),
         }
     }
 
